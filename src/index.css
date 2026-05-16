@@ -1,0 +1,307 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Theme Lightness Algorithm - LIGHT MODE */
+    --theme-l-bg: 95%;
+    --theme-l-card: 100%;
+    --theme-l-fg: 4%;
+    --theme-l-secondary: 92%;
+    --theme-l-border: 88%;
+    --theme-l-muted: 45%;
+    
+    /* Default Flavor tokens */
+    --h: 243;
+    --s: 75%;
+    --p: 243 75% 58%;
+    --radius: 1.5rem;
+    --font-main: 'Space Grotesk', sans-serif;
+  }
+
+  .dark {
+    /* Theme Lightness Algorithm - DARK MODE */
+    --theme-l-bg: 4%;
+    --theme-l-card: 7%;
+    --theme-l-fg: 95%;
+    --theme-l-secondary: 11%;
+    --theme-l-border: 17%;
+    --theme-l-muted: 60%;
+  }
+
+  /* RADICAL VARIANT DIFFERENTIATION */
+  
+  [data-variant="standard"] {
+    --h: 243;
+    --s: 75%;
+    --p: 243 75% 58%;
+    --radius: 1.5rem;
+    --font-main: 'Space Grotesk', sans-serif;
+  }
+
+  [data-variant="standard"].dark {
+    /* ULTRA-HIGH CONTRAST FOR DARK MODE (replaces the previous !important overrides) */
+    --theme-l-bg: 3%;     /* Deeper, more stable black */
+    --theme-l-card: 5%;   /* Subtle elevation */
+    --theme-l-fg: 100%;   /* Pure White */
+    --theme-l-muted: 98%;  /* Sharp white subtext - No more druggy blue tint */
+    --theme-l-border: 12%; /* Low-profile operational borders */
+    --theme-l-secondary: 8%; /* Deep command slots */
+  }
+
+  [data-variant="mono"] {
+    --h: 0;
+    --s: 0%;
+    --p: 0 0% 0%;
+    --radius: 0rem; 
+    --font-main: 'Cascadia Code', 'JetBrains Mono', monospace;
+    --theme-l-bg: 100%;
+    --theme-l-card: 100%;
+    --theme-l-fg: 0%;
+    --theme-l-border: 10%;
+    --theme-l-secondary: 95%;
+  }
+  
+  [data-variant="mono"].dark {
+    --p: 0 0% 100%;
+    --theme-l-bg: 0%;
+    --theme-l-card: 2%;
+    --theme-l-fg: 100%;
+    --theme-l-border: 20%;
+    --theme-l-secondary: 10%;
+  }
+
+  [data-variant="graphite"] {
+    --h: 220;
+    --s: 15%;
+    --p: 220 15% 45%;
+    --radius: 0.75rem; /* Studio Precision */
+    --font-main: 'Inter', sans-serif;
+  }
+
+  [data-variant="slate"] {
+    --h: 215;
+    --s: 35%; /* High Blue Saturation */
+    --p: 215 35% 50%;
+    --radius: 1.25rem; /* Modern Soft */
+    --font-main: 'Outfit', sans-serif;
+  }
+
+  [data-variant="onyx"] {
+    --h: 240;
+    --s: 12%;
+    --p: 240 12% 20%;
+    --radius: 2.5rem; /* Ultra Smooth */
+    --font-main: 'Syne', sans-serif;
+  }
+
+  [data-variant="onyx"].dark {
+    --theme-l-bg: 2%; /* Deepest Black */
+    --theme-l-card: 5%;
+  }
+
+  /* APPLY SYSTEM-WIDE */
+  :root, .dark, [data-variant] {
+    --background: var(--h) var(--s) var(--theme-l-bg);
+    --foreground: var(--h) var(--s) var(--theme-l-fg);
+    --card: var(--h) var(--s) var(--theme-l-card);
+    --card-foreground: var(--h) var(--s) var(--theme-l-fg);
+    --popover: var(--h) var(--s) var(--theme-l-card);
+    --popover-foreground: var(--h) var(--s) var(--theme-l-fg);
+    --secondary: var(--h) var(--s) var(--theme-l-secondary);
+    --secondary-foreground: var(--h) var(--s) var(--theme-l-fg);
+    --muted: var(--h) var(--s) var(--theme-l-secondary);
+    --muted-foreground: var(--h) var(--s) var(--theme-l-muted);
+    --accent: var(--h) var(--s) var(--theme-l-secondary);
+    --accent-foreground: var(--h) var(--s) var(--theme-l-fg);
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: var(--h) var(--s) var(--theme-l-border);
+    --input: var(--h) var(--s) var(--theme-l-border);
+    --ring: var(--p);
+    --primary-foreground: var(--h) var(--s) var(--theme-l-bg);
+  }
+
+  * {
+    border-color: hsl(var(--border));
+    font-family: var(--font-main);
+  }
+
+  svg {
+    stroke-width: 1.5px;
+    filter: drop-shadow(0 0 8px currentColor);
+    opacity: 0.9;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body transition-colors duration-300;
+  }
+  
+  h1, h2, h3, .heading-serif {
+    font-family: var(--font-display);
+    @apply text-foreground;
+  }
+}
+
+@layer utilities {
+  .pill {
+    @apply rounded-full;
+  }
+  .glass-card {
+    @apply bg-card border border-border/80 shadow-[0_8px_32px_rgba(0,0,0,0.02),0_1px_2px_rgba(0,0,0,0.01)];
+    border-radius: 2.5rem;
+  }
+  .sidebar-item {
+    @apply hover:bg-secondary/80 active:bg-secondary/90 transition-colors;
+  }
+  
+  /* Mobile-specific utilities */
+  
+  /* Safe area padding for notched devices */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  /* Touch-friendly minimum sizes */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent text selection on touch */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  /* Smooth scrolling for mobile */
+  .smooth-scroll {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Base override for hardcoded colors in dark mode */
+.dark .bg-white {
+  background-color: hsl(var(--card)) !important;
+}
+
+.dark .text-\[\#111827\] {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .bg-\[\#f9fafb\] {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Global Scrollbar System */
+
+/* 1. Definitive Scrollbar Hide for Utility Classes */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none !important;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+
+/* 2. Premium Custom Scrollbar for the App Content */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-border/40 rounded-full transition-colors hover:bg-indigo-500/40;
+}
+
+/* Specific Override for Sidebar */
+aside .scrollbar-hide {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+aside .scrollbar-hide::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Cinematic View Transitions Architecture */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  will-change: clip-path;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Layering logic for iris reveal */
+.to-light-transition::view-transition-new(root) {
+  z-index: 1000;
+}
+.to-light-transition::view-transition-old(root) {
+  z-index: 1;
+}
+
+.to-dark-transition::view-transition-old(root) {
+  z-index: 1000;
+}
+.to-dark-transition::view-transition-new(root) {
+  z-index: 1;
+}
+
+
+/* Mobile pill nav clearance — applied to all mobile page scroll containers */
+@media (max-width: 767px) {
+  .mobile-page {
+    padding-bottom: 7rem; /* clears the floating pill (bottom-6 + ~56px pill) */
+  }
+}
+
+/* Mobile-specific overrides */
+@media (max-width: 768px) {
+  /* Larger text for readability - prevents iOS zoom */
+  body {
+    font-size: 16px;
+  }
+
+  /* Bottom nav safe area */
+  .mobile-nav-safe {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+  }
+
+  /* Prevent horizontal overflow on mobile */
+  main {
+    overflow-x: hidden;
+  }
+
+  /* Optimize animations for mobile performance */
+  * {
+    animation-duration: 0.2s !important;
+    transition-duration: 0.2s !important;
+  }
+  
+  /* Reduce motion for better mobile performance */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

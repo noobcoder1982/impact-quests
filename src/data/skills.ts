@@ -1,0 +1,23 @@
+export const PREDEFINED_SKILLS = [
+  "Disaster Relief",
+  "Medical First Aid",
+  "Crisis Counseling",
+  "Logistics Coordination",
+  "Technical Support",
+  "Education & Tutoring",
+  "Environment Conservation",
+  "Community Outreach",
+  "Project Management",
+  "Social Media",
+  "Event Planning",
+  "Data Analysis",
+  "Translation Services",
+  "Elderly Care",
+  "Youth Mentoring",
+  "Food Distribution",
+  "Search and Rescue",
+  "Legal Aid",
+  "Psychological Support",
+  "Waste Management",
+  "Sustainable Farming"
+];
