@@ -107,7 +107,7 @@ ${isCasual ? "Respond briefly and professionally." : `Provide:
     IMPORTANT: Return ONLY your raw markdown response. DO NOT wrap it in JSON. DO NOT include any introductory or trailing remarks. Just output the final response text directly.
     `;
 
-    return await callAI(prompt, "meta/llama3-8b-instruct", chatMode === 'creative' ? 0.9 : 0.7, 512);
+    return await callAI(prompt, "meta/llama-3.1-8b-instruct", chatMode === 'creative' ? 0.9 : 0.7, 512);
   },
 
   // New: Enhanced Mission Analysis
@@ -139,7 +139,7 @@ ${isCasual ? "Respond briefly and professionally." : `Provide:
     }
     `;
 
-    return await callAI(prompt, "meta/llama3-8b-instruct", 0.3, 512);
+    return await callAI(prompt, "meta/llama-3.1-8b-instruct", 0.3, 512);
   },
 
   generateDashboardInsights: async (tasks, inventory) => {

@@ -5,7 +5,7 @@ const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 /**
  * Common AI call wrapper
  */
-const callAI = async (prompt, model = "meta/llama3-8b-instruct", temperature = 0.1, maxTokens = 1024) => {
+const callAI = async (prompt, model = "meta/llama-3.1-8b-instruct", temperature = 0.1, maxTokens = 1024) => {
   const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
   
   if (!NVIDIA_API_KEY) {

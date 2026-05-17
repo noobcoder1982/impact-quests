@@ -18,7 +18,7 @@ const assistAdmin = async (request, context = {}) => {
      "next_steps": ["Action 1", "Action 2"]
   `;
 
-  return await callAI(prompt, "meta/llama3-8b-instruct", 0.7, 512);
+  return await callAI(prompt, "meta/llama-3.1-8b-instruct", 0.7, 512);
 };
 
 module.exports = { assistAdmin };
