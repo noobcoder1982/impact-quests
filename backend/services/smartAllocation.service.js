@@ -1,23 +1,49 @@
 /**
  * Smart Resource Allocation Service
- * Uses IBM Watsonx Natural Language Understanding (NLU) to analyze mission descriptions
+ * Uses IBM Watsonx.ai to analyze mission descriptions
  * and match them with the best available volunteers/resources
  */
 
-const NaturalLanguageUnderstandingV1 = require('ibm-watson/natural-language-understanding/v1');
-const { IamAuthenticator } = require('ibm-cloud-sdk-core');
+const axios = require('axios');
+const qs = require('qs'); // Used to stringify data for x-www-form-urlencoded
+
+// IAM Token caching
+let cachedToken = null;
+let tokenExpiration = 0;
 
 /**
- * Initialize Watson NLU client
- * API Key is loaded from environment variables
+ * Generate IBM Cloud IAM bearer token
  */
-const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
-  version: '2022-04-07',
-  authenticator: new IamAuthenticator({
-    apikey: process.env.WATSONX_NLU_API_KEY,
-  }),
-  serviceUrl: process.env.WATSONX_NLU_URL || 'https://api.us-south.natural-language-understanding.watson.cloud.ibm.com',
-});
+async function getIamToken() {
+  // Return cached token if valid
+  if (cachedToken && Date.now() < tokenExpiration) {
+    return cachedToken;
+  }
+  
+  const apiKey = process.env.IBM_API_KEY;
+  if (!apiKey) {
+    throw new Error('IBM_API_KEY is missing or invalid. Please set it in your environment variables.');
+  }
+
+  try {
+    const response = await axios.post('https://iam.cloud.ibm.com/identity/token', qs.stringify({
+      grant_type: 'urn:ibm:params:oauth:grant-type:apikey',
+      apikey: apiKey
+    }), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+    
+    cachedToken = response.data.access_token;
+    // Expire token 60 seconds before actual expiration
+    tokenExpiration = Date.now() + (response.data.expires_in - 60) * 1000;
+    return cachedToken;
+  } catch (error) {
+    console.error('Error fetching IAM token:', error.response?.data || error.message);
+    throw new Error('Failed to generate IAM token');
+  }
+}
 
 /**
  * Mock database of available volunteers/resources
@@ -99,9 +125,9 @@ const mockVolunteers = [
 ];
 
 /**
- * Extract keywords, entities, and concepts from mission description using Watson NLU
+ * Extract keywords, entities, and concepts from mission description using Watsonx
  * @param {string} missionDescription - The mission description text
- * @returns {Promise<Object>} Extracted NLU features
+ * @returns {Promise<Object>} Extracted features
  */
 async function extractMissionFeatures(missionDescription) {
   try {
@@ -114,59 +140,77 @@ async function extractMissionFeatures(missionDescription) {
       throw new Error('Mission description is too short. Please provide more details.');
     }
 
-    // Configure Watson NLU analysis parameters
-    const analyzeParams = {
-      text: missionDescription,
-      features: {
-        // Extract key concepts from the text
-        concepts: {
-          limit: 10
-        },
-        // Extract named entities (locations, quantities, organizations, etc.)
-        entities: {
-          limit: 20,
-          mentions: true,
-          sentiment: false,
-          emotion: false
-        },
-        // Extract important keywords
-        keywords: {
-          limit: 15,
-          sentiment: false,
-          emotion: false
-        },
-        // Classify the text into categories
-        categories: {
-          limit: 5
-        }
-      }
-    };
+    const token = await getIamToken();
+    const url = process.env.WATSONX_URL || 'https://us-south.ml.cloud.ibm.com';
+    const projectId = process.env.WATSONX_PROJECT_ID;
 
-    console.log('🔍 Analyzing mission description with Watson NLU...');
-    const analysisResults = await naturalLanguageUnderstanding.analyze(analyzeParams);
+    if (!projectId) {
+      throw new Error('WATSONX_PROJECT_ID is missing in environment variables.');
+    }
+
+    const prompt = `Analyze the following mission description and extract concepts, entities, and keywords.
+Return ONLY valid JSON with no markdown formatting. The JSON must match this structure:
+{
+  "concepts": [{"text": "concept1", "relevance": 0.9}],
+  "entities": [{"text": "entity1", "type": "Location", "relevance": 0.8}],
+  "keywords": [{"text": "keyword1", "relevance": 0.95}],
+  "categories": [{"label": "/category", "score": 0.9}]
+}
+
+Mission description:
+"${missionDescription}"`;
+
+    console.log('🔍 Analyzing mission description with Watsonx...');
+    
+    const response = await axios.post(`${url}/ml/v1/text/generation?version=2023-05-29`, {
+      model_id: 'ibm/granite-13b-chat-v2',
+      project_id: projectId,
+      input: prompt,
+      parameters: {
+        max_new_tokens: 500,
+        temperature: 0.1,
+        decoding_method: 'greedy'
+      }
+    }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+
+    const outputText = response.data.results[0].generated_text;
+    
+    let parsedData;
+    const jsonMatch = outputText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      parsedData = JSON.parse(jsonMatch[0]);
+    } else {
+      parsedData = JSON.parse(outputText);
+    }
 
     // Extract and normalize the results
     const extractedData = {
-      concepts: analysisResults.result.concepts?.map(c => ({
+      concepts: parsedData.concepts?.map(c => ({
         text: c.text.toLowerCase(),
-        relevance: c.relevance
+        relevance: c.relevance || 0.5
       })) || [],
-      entities: analysisResults.result.entities?.map(e => ({
+      entities: parsedData.entities?.map(e => ({
         text: e.text.toLowerCase(),
         type: e.type,
-        relevance: e.relevance
+        relevance: e.relevance || 0.5
       })) || [],
-      keywords: analysisResults.result.keywords?.map(k => ({
+      keywords: parsedData.keywords?.map(k => ({
         text: k.text.toLowerCase(),
-        relevance: k.relevance
+        relevance: k.relevance || 0.5
       })) || [],
-      categories: analysisResults.result.categories?.map(c => ({
+      categories: parsedData.categories?.map(c => ({
         label: c.label,
-        score: c.score
+        score: c.score || 0.5
       })) || []
     };
 
-    console.log('✅ Watson NLU analysis complete');
+    console.log('✅ Watsonx analysis complete');
     console.log(`   - Concepts: ${extractedData.concepts.length}`);
     console.log(`   - Entities: ${extractedData.entities.length}`);
     console.log(`   - Keywords: ${extractedData.keywords.length}`);
@@ -174,15 +218,15 @@ async function extractMissionFeatures(missionDescription) {
     return extractedData;
 
   } catch (error) {
-    console.error('❌ Watson NLU Analysis Error:', error.message);
+    console.error('❌ Watsonx Analysis Error:', error.response?.data || error.message);
     
     // Provide helpful error messages
-    if (error.code === 401 || error.status === 401) {
-      throw new Error('Watson NLU authentication failed. Please check your API key.');
+    if (error.response?.status === 401) {
+      // Token might be expired, clear it
+      cachedToken = null;
+      throw new Error('Watsonx authentication failed. Token may be expired.');
     } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
-      throw new Error('Cannot connect to Watson NLU service. Please check your network connection.');
-    } else if (error.message.includes('API key')) {
-      throw new Error('Watson NLU API key is missing or invalid. Please set WATSONX_NLU_API_KEY in your environment.');
+      throw new Error('Cannot connect to Watsonx service. Please check your network connection.');
     }
     
     throw error;
@@ -191,7 +235,7 @@ async function extractMissionFeatures(missionDescription) {
 
 /**
  * Calculate match score between extracted features and volunteer skills
- * @param {Object} extractedFeatures - Features extracted from Watson NLU
+ * @param {Object} extractedFeatures - Features extracted from Watsonx
  * @param {Object} volunteer - Volunteer object with skills
  * @returns {number} Match score (0-100)
  */
@@ -247,7 +291,7 @@ function calculateMatchScore(extractedFeatures, volunteer) {
  */
 async function findBestMatches(missionDescription, topN = 3) {
   try {
-    // Step 1: Extract features using Watson NLU
+    // Step 1: Extract features using Watsonx
     const extractedFeatures = await extractMissionFeatures(missionDescription);
 
     // Step 2: Calculate match scores for all volunteers
@@ -290,29 +334,22 @@ async function findBestMatches(missionDescription, topN = 3) {
 }
 
 /**
- * Health check for Watson NLU service
+ * Health check for Watsonx service
  * @returns {Promise<Object>} Service status
  */
 async function checkWatsonHealth() {
   try {
-    // Try a simple analysis to verify the service is working
-    const testText = "Emergency medical assistance needed";
-    await naturalLanguageUnderstanding.analyze({
-      text: testText,
-      features: {
-        keywords: { limit: 1 }
-      }
-    });
-
+    // Generate token to verify credentials
+    await getIamToken();
     return {
       status: 'healthy',
-      service: 'Watson NLU',
-      message: 'Service is operational'
+      service: 'Watsonx AI',
+      message: 'Service is operational and IAM token successfully generated'
     };
   } catch (error) {
     return {
       status: 'unhealthy',
-      service: 'Watson NLU',
+      service: 'Watsonx AI',
       message: error.message
     };
   }

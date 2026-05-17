@@ -1,6 +1,6 @@
 /**
  * Smart Allocation Controller
- * Handles HTTP requests for smart resource allocation using Watson NLU
+ * Handles HTTP requests for smart resource allocation using Watsonx
  */
 
 const smartAllocationService = require('../services/smartAllocation.service');
@@ -51,11 +51,11 @@ async function analyzeMission(req, res) {
 
     // Handle specific error types
     if (error.message.includes('authentication') || error.message.includes('API key')) {
-      return errorResponse(res, 500, 'Watson NLU service authentication failed. Please contact administrator.');
+      return errorResponse(res, 500, 'Watsonx service authentication failed. Please contact administrator.');
     }
 
     if (error.message.includes('network') || error.message.includes('connect')) {
-      return errorResponse(res, 503, 'Cannot connect to Watson NLU service. Please try again later.');
+      return errorResponse(res, 503, 'Cannot connect to Watsonx service. Please try again later.');
     }
 
     return errorResponse(res, 500, error.message || 'Failed to analyze mission');
@@ -106,7 +106,7 @@ async function extractFeatures(req, res) {
 
     console.log(`🔍 Extracting features from: "${missionDescription.substring(0, 50)}..."`);
 
-    // Extract features using Watson NLU
+    // Extract features using Watsonx
     const features = await smartAllocationService.extractMissionFeatures(missionDescription);
 
     return successResponse(res, 200, 'Features extracted successfully', features);
@@ -115,7 +115,7 @@ async function extractFeatures(req, res) {
     console.error('❌ Error in extractFeatures controller:', error);
 
     if (error.message.includes('authentication') || error.message.includes('API key')) {
-      return errorResponse(res, 500, 'Watson NLU service authentication failed. Please contact administrator.');
+      return errorResponse(res, 500, 'Watsonx service authentication failed. Please contact administrator.');
     }
 
     return errorResponse(res, 500, error.message || 'Failed to extract features');
@@ -124,7 +124,7 @@ async function extractFeatures(req, res) {
 
 /**
  * GET /api/v1/smart-allocation/health
- * Check Watson NLU service health
+ * Check Watsonx service health
  */
 async function checkHealth(req, res) {
   try {

@@ -93,29 +93,31 @@ export default function MapIntelligencePage() {
       {/* --- TOP TACTICAL OVERLAY --- */}
       <header className="absolute top-4 md:top-8 left-4 md:left-8 right-4 md:right-8 z-30 flex flex-col md:flex-row justify-between items-start md:items-start gap-4 pointer-events-none">
         <div className="space-y-2 pointer-events-auto">
-          <div className="flex items-center gap-3">
-             <div className="h-10 w-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-2xl shadow-indigo-600/20">
-                <Compass className="h-5 w-5" />
+          <div className="flex items-center gap-4 p-2 pl-3 pr-6 bg-background/80 backdrop-blur-2xl border border-border/50 rounded-[2rem] shadow-2xl">
+             <div className="h-12 w-12 rounded-[1.25rem] bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                <Compass className="h-6 w-6" />
              </div>
-             <h1 className="text-2xl md:text-3xl font-black tracking-tighter text-foreground">Strategic Map</h1>
+             <div>
+               <h1 className="text-xl md:text-2xl font-black tracking-tight text-foreground">Command Map</h1>
+               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Strategic Hub</p>
+             </div>
           </div>
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40 ml-1 hidden md:block">AI-Driven Geographic Deployment Hub</p>
         </div>
 
-        <div className="flex gap-2 md:gap-4 pointer-events-auto w-full md:w-auto">
-           <div className="h-12 md:h-16 bg-card border border-border rounded-[2rem] px-4 flex items-center gap-4 shadow-2xl overflow-hidden flex-1 md:w-[300px]">
-              <Search className="h-5 w-5 text-muted-foreground ml-2" />
+        <div className="flex gap-2 md:gap-3 pointer-events-auto w-full md:w-auto">
+           <div className="h-14 md:h-16 bg-background/80 backdrop-blur-2xl border border-border/50 rounded-[2rem] px-5 flex items-center gap-3 shadow-2xl overflow-hidden flex-1 md:w-[320px] transition-all focus-within:ring-2 focus-within:ring-primary/50">
+              <Search className="h-5 w-5 text-muted-foreground" />
               <input 
                  type="text" 
                  placeholder="Search sector or coordinates..."
-                 className="bg-transparent border-none outline-none text-sm w-full h-full text-foreground placeholder:text-muted-foreground/50 font-bold"
+                 className="bg-transparent border-none outline-none text-sm w-full h-full text-foreground placeholder:text-muted-foreground/60 font-medium"
                  value={searchQuery}
                  onChange={(e) => setSearchQuery(e.target.value)}
                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
            </div>
-           <Button onClick={handleSearch} className="h-12 md:h-16 w-12 md:w-16 rounded-[2rem] bg-indigo-600 text-white shadow-2xl shadow-indigo-600/20 hover:scale-105 transition-all touch-target">
-              <Compass className="h-5 md:h-6 w-5 md:w-6" />
+           <Button onClick={handleSearch} className="h-14 md:h-16 w-14 md:w-16 rounded-[2rem] bg-foreground text-background shadow-2xl hover:scale-105 transition-all touch-target border border-border/10">
+              <Compass className="h-6 w-6" />
            </Button>
         </div>
       </header>
@@ -157,47 +159,48 @@ export default function MapIntelligencePage() {
                    </div>
                  </MarkerContent>
                  
-                 <MarkerPopup closeButton offset={25} className="w-64 p-0 overflow-hidden bg-zinc-950 border-white/10 rounded-xl shadow-2xl">
+                 <MarkerPopup closeButton offset={25} className="w-72 p-0 overflow-hidden bg-card border-border rounded-2xl shadow-2xl">
                     <div className={cn(
-                      "relative h-20",
-                      task.priority === 'Critical' ? 'bg-gradient-to-br from-rose-500/20 to-rose-900/40' : 
-                      task.priority === 'High' ? 'bg-gradient-to-br from-orange-500/20 to-orange-900/40' : 
-                      'bg-gradient-to-br from-emerald-500/20 to-emerald-900/40'
+                      "relative h-24 overflow-hidden",
+                      task.priority === 'Critical' ? 'bg-gradient-to-br from-rose-500/20 via-rose-500/5 to-transparent' : 
+                      task.priority === 'High' ? 'bg-gradient-to-br from-orange-500/20 via-orange-500/5 to-transparent' : 
+                      'bg-gradient-to-br from-emerald-500/20 via-emerald-500/5 to-transparent'
                     )}>
-                       <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                          <Target className="h-12 w-12" />
+                       <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,transparent,black)] dark:[mask-image:linear-gradient(0deg,transparent,white)]" />
+                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10">
+                          <Target className="h-20 w-20 text-foreground" />
                        </div>
-                       <div className="absolute bottom-2 left-3">
+                       <div className="absolute bottom-3 left-4">
                           <span className={cn(
-                            "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border flex items-center gap-1",
+                            "text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-sm border flex items-center gap-1.5",
                             task.priority === 'Critical' ? 'bg-rose-500 text-white border-rose-400' : 
                             task.priority === 'High' ? 'bg-orange-500 text-white border-orange-400' : 
                             'bg-emerald-500 text-white border-emerald-400'
                           )}>
-                            {task.priority} Priority
+                            <Alert className="h-3 w-3" /> {task.priority} Priority
                           </span>
                        </div>
                     </div>
-                    <div className="p-4 space-y-4">
+                    <div className="p-5 space-y-4">
                        <div>
-                          <p className="text-sm font-bold leading-tight">{task.title}</p>
-                          <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
-                            <Compass className="h-3 w-3" /> {task.location || 'Coordinates Encrypted'}
+                          <p className="text-base font-black leading-tight text-foreground">{task.title}</p>
+                          <p className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1.5 font-medium">
+                            <Compass className="h-3.5 w-3.5 opacity-70" /> {task.location || 'Coordinates Encrypted'}
                           </p>
                        </div>
                        
-                       <div className="flex justify-between items-center pt-3 border-t border-border/40">
-                          <div className="flex items-center gap-2">
+                       <div className="flex justify-between items-center pt-4 border-t border-border">
+                          <div className="flex items-center gap-3">
                              <div className="flex -space-x-2">
                                 {[...Array(3)].map((_, idx) => (
-                                  <div key={idx} className="h-6 w-6 rounded-full border-2 border-card bg-secondary overflow-hidden">
+                                  <div key={idx} className="h-7 w-7 rounded-full border-2 border-card bg-secondary overflow-hidden shadow-sm">
                                     <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${task._id}-${idx}`} alt="avatar" />
                                   </div>
                                 ))}
                              </div>
-                             <span className="text-[10px] font-bold text-muted-foreground">+4</span>
+                             <span className="text-xs font-bold text-muted-foreground">+4</span>
                           </div>
-                          <Button size="sm" className="h-7 px-4 text-[10px] uppercase font-black tracking-widest rounded-md bg-foreground text-background hover:bg-accent hover:text-white transition-all">
+                          <Button size="sm" className="h-8 px-5 text-[10px] uppercase font-black tracking-widest rounded-lg bg-foreground text-background shadow-md hover:scale-105 transition-all">
                              Deploy
                           </Button>
                        </div>
@@ -211,106 +214,106 @@ export default function MapIntelligencePage() {
       </div>
 
       {/* --- RIGHT INFO PANEL: ACTIVE OPERATIONS --- */}
-      <aside className="hidden md:block absolute top-32 right-8 w-80 z-30 space-y-6 pointer-events-none">
+      <aside className="hidden md:block absolute top-36 right-8 w-80 z-30 space-y-4 pointer-events-none">
         <motion.div
           initial={{ x: 50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="bg-zinc-950 border border-white/10 rounded-[2rem] p-6 shadow-2xl space-y-4 pointer-events-auto"
+          className="bg-background/80 backdrop-blur-2xl border border-border/50 rounded-[2rem] p-6 shadow-2xl space-y-5 pointer-events-auto"
         >
-          <div className="flex items-center justify-between pb-4 border-b border-border/40">
+          <div className="flex items-center justify-between pb-4 border-b border-border/50">
              <div>
-               <h3 className="text-lg font-black tracking-tight">Active Operations</h3>
-               <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Live Neural Sync</p>
+               <h3 className="text-lg font-black tracking-tight text-foreground">Active Ops</h3>
+               <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Live Sync</p>
              </div>
-             <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
-                <Target className="h-4 w-4" />
+             <div className="h-10 w-10 rounded-[1rem] bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                <Target className="h-5 w-5" />
              </div>
           </div>
 
           <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 scrollbar-hide">
              {loading ? (
                <div className="animate-pulse space-y-3">
-                 {[1,2,3].map(i => <div key={i} className="h-16 bg-secondary rounded-xl" />)}
+                 {[1,2,3].map(i => <div key={i} className="h-16 bg-muted rounded-2xl" />)}
                </div>
              ) : tasks.slice(0, 4).map((task) => (
-               <div key={task._id} className="group cursor-pointer bg-white/5 hover:bg-white/10 rounded-xl p-3 border border-white/5 transition-all">
-                  <div className="flex justify-between items-start mb-2">
+               <div key={task._id} className="group cursor-pointer bg-card/50 hover:bg-card/80 border border-border/50 rounded-2xl p-3.5 shadow-sm hover:shadow-md transition-all">
+                  <div className="flex justify-between items-center mb-2">
                      <span className={cn(
-                       "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded",
-                       task.priority === 'Critical' ? 'bg-rose-500/20 text-rose-500' : 
-                       task.priority === 'High' ? 'bg-orange-500/20 text-orange-500' : 
-                       'bg-emerald-500/20 text-emerald-500'
+                       "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md",
+                       task.priority === 'Critical' ? 'bg-rose-500/10 text-rose-500' : 
+                       task.priority === 'High' ? 'bg-orange-500/10 text-orange-500' : 
+                       'bg-emerald-500/10 text-emerald-500'
                      )}>
                        {task.priority}
                      </span>
-                     <span className="text-[10px] text-muted-foreground font-medium">{task.category}</span>
+                     <span className="text-[10px] text-muted-foreground font-bold">{task.category}</span>
                   </div>
-                  <p className="text-xs font-bold leading-tight line-clamp-1">{task.title}</p>
+                  <p className="text-sm font-bold leading-tight text-foreground line-clamp-1">{task.title}</p>
                </div>
              ))}
           </div>
 
-          <Button className="w-full h-12 rounded-xl bg-foreground text-background hover:bg-accent hover:text-white text-xs font-black uppercase tracking-widest transition-all mt-2">
-             View All Operations
+          <Button className="w-full h-12 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/80 text-xs font-black uppercase tracking-widest transition-all mt-2 shadow-sm border border-border/50">
+             View All
           </Button>
         </motion.div>
         
         {/* Mini Legend */}
-        <div className="bg-zinc-950 border border-white/10 rounded-2xl p-4 flex justify-between pointer-events-auto shadow-xl">
+        <div className="bg-background/80 backdrop-blur-2xl border border-border/50 rounded-2xl p-4 flex justify-between pointer-events-auto shadow-xl">
            {[
              { label: 'Crit', color: 'bg-rose-500' },
              { label: 'High', color: 'bg-orange-500' },
              { label: 'Stable', color: 'bg-emerald-500' },
              { label: 'Pins', icon: MapPin }
            ].map((l, i) => (
-             <div key={i} className="flex items-center gap-1.5">
-                {l.color ? <div className={cn("h-1.5 w-1.5 rounded-full shadow-sm", l.color)} /> : <l.icon className="h-3 w-3 opacity-40" />}
-                <span className="text-[9px] font-black uppercase opacity-60 tracking-widest">{l.label}</span>
+             <div key={i} className="flex items-center gap-2">
+                {l.color ? <div className={cn("h-2 w-2 rounded-full shadow-sm", l.color)} /> : <l.icon className="h-3.5 w-3.5 text-muted-foreground" />}
+                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{l.label}</span>
              </div>
            ))}
         </div>
       </aside>
 
       {/* Bottom Floating Stats - Hidden on mobile to avoid overlap with nav */}
-      <div className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-30 gap-4">
+      <div className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-30 gap-4 pointer-events-none">
          {[
            { label: 'Active Missions', val: tasks.length },
            { label: 'Resource Density', val: 'High' },
            { label: 'Response Velocity', val: '8.4m' }
          ].map((s, i) => (
-           <div key={i} className="bg-zinc-950 border border-white/10 px-6 py-3 rounded-2xl shadow-2xl flex flex-col items-center min-w-[120px]">
-              <span className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest">{s.label}</span>
-              <span className="text-sm font-black italic">{s.val}</span>
+           <div key={i} className="bg-background/80 backdrop-blur-2xl border border-border/50 px-6 py-3.5 rounded-2xl shadow-xl flex flex-col items-center min-w-[140px] pointer-events-auto transition-transform hover:-translate-y-1">
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-0.5">{s.label}</span>
+              <span className="text-base font-black text-foreground">{s.val}</span>
            </div>
          ))}
       </div>
 
       {/* Mobile Bottom Sheet for Task List */}
       <div className="md:hidden absolute bottom-20 left-0 right-0 z-30 pointer-events-none">
-        <div className="bg-zinc-950 border-t border-white/10 rounded-t-[2rem] p-4 shadow-2xl max-h-[40vh] overflow-y-auto pointer-events-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-black">Active Operations</h3>
-            <span className="text-sm text-muted-foreground">{tasks.length} tasks</span>
+        <div className="bg-background/90 backdrop-blur-3xl border-t border-border/50 rounded-t-[2.5rem] p-5 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] max-h-[40vh] overflow-y-auto pointer-events-auto">
+          <div className="flex items-center justify-between mb-5 px-1">
+            <h3 className="text-xl font-black text-foreground">Live Operations</h3>
+            <span className="text-sm font-bold text-muted-foreground bg-secondary px-3 py-1 rounded-full">{tasks.length} tasks</span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {loading ? (
-              <div className="animate-pulse space-y-2">
-                {[1,2,3].map(i => <div key={i} className="h-12 bg-secondary rounded-xl" />)}
+              <div className="animate-pulse space-y-3">
+                {[1,2,3].map(i => <div key={i} className="h-16 bg-muted rounded-2xl" />)}
               </div>
             ) : tasks.slice(0, 5).map((task) => (
-              <div key={task._id} className="bg-white/5 hover:bg-white/10 rounded-xl p-3 border border-white/5 transition-all">
-                <div className="flex justify-between items-start mb-1">
+              <div key={task._id} className="bg-card border border-border/50 rounded-2xl p-4 shadow-sm active:scale-95 transition-all">
+                <div className="flex justify-between items-center mb-2">
                   <span className={cn(
-                    "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded",
-                    task.urgency === 'critical' ? 'bg-rose-500/20 text-rose-500' :
-                    task.urgency === 'high' ? 'bg-orange-500/20 text-orange-500' :
-                    'bg-emerald-500/20 text-emerald-500'
+                    "text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-md",
+                    task.urgency === 'critical' || task.priority === 'Critical' ? 'bg-rose-500/10 text-rose-500' :
+                    task.urgency === 'high' || task.priority === 'High' ? 'bg-orange-500/10 text-orange-500' :
+                    'bg-emerald-500/10 text-emerald-500'
                   )}>
-                    {task.urgency}
+                    {task.urgency || task.priority}
                   </span>
-                  <span className="text-[10px] text-muted-foreground">{task.category}</span>
+                  <span className="text-[10px] font-bold text-muted-foreground">{task.category}</span>
                 </div>
-                <p className="text-xs font-bold leading-tight line-clamp-1">{task.title}</p>
+                <p className="text-sm font-bold leading-tight text-foreground line-clamp-1">{task.title}</p>
               </div>
             ))}
           </div>

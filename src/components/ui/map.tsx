@@ -42,7 +42,11 @@ export const Map = React.forwardRef<MapRef, MapProps>(({ center, zoom = 11, clas
     })
 
     return () => {
-      m.remove()
+      try {
+        m.remove()
+      } catch (e) {
+        // ignore
+      }
     }
   }, [theme])
 
@@ -76,8 +80,9 @@ export const MapControls = ({ position = 'top-right', showCompass = true, showZo
     
     map.addControl(nav, position)
     
+    let locate: any = null
     if (showLocate) {
-      const locate = new maplibregl.GeolocateControl({
+      locate = new maplibregl.GeolocateControl({
         positionOptions: { enableHighAccuracy: true },
         trackUserLocation: true
       })
@@ -85,7 +90,21 @@ export const MapControls = ({ position = 'top-right', showCompass = true, showZo
     }
 
     return () => {
-      map.removeControl(nav)
+      try {
+        if (map.hasControl(nav)) {
+          map.removeControl(nav)
+        }
+      } catch (e) {
+        // ignore
+      }
+      
+      try {
+        if (locate && map.hasControl(locate)) {
+          map.removeControl(locate)
+        }
+      } catch (e) {
+        // ignore
+      }
     }
   }, [map])
 
@@ -107,7 +126,11 @@ export const MapMarker = ({ longitude, latitude, children }: any) => {
     markerRef.current = marker
 
     return () => {
-      marker.remove()
+      try {
+        marker.remove()
+      } catch (e) {
+        // ignore
+      }
     }
   }, [map, longitude, latitude])
 
@@ -143,6 +166,14 @@ export const MarkerPopup = ({ children, offset = 0, closeButton = true, classNam
 
     // If this is inside a marker, we should ideally attach it to the marker
     // For now we'll just allow the portal to render
+    
+    return () => {
+      try {
+        popup.remove()
+      } catch (e) {
+        // ignore
+      }
+    }
   }, [map])
 
   return createPortal(children, container)
