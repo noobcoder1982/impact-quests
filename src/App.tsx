@@ -515,9 +515,17 @@ function App({ isAuthenticated, handleLogin, handleLogout }: { isAuthenticated: 
   
   const isOnboardingRequired = React.useMemo(() => {
     if (!isAuthenticated || !user || Object.keys(user).length === 0) return false;
-    // Handle both lowercase 'volunteer' and uppercase 'VOLUNTEER'
     const userRole = (user.role || '').toLowerCase();
-    return userRole === 'volunteer' && user.isOnboarded === false;
+    if (userRole !== 'volunteer') return false;
+
+    // Force onboarding if bypassed, legacy, missing nickname, or selectedSkills are empty
+    return (
+      user.isOnboarded === false ||
+      user.isOnboarded === undefined ||
+      !user.nickname ||
+      !user.selectedSkills ||
+      user.selectedSkills.length === 0
+    );
   }, [user, isAuthenticated]);
 
   React.useEffect(() => {
