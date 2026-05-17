@@ -28,6 +28,7 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
     organizationName: '',
   });
   const [showPassword, setShowPassword] = React.useState(false);
+  const [isShaking, setIsShaking] = React.useState(false);
   const passwordRules = React.useMemo(() => [
     { label: "Min 6 characters", checked: formData.password.length >= 6 },
     { label: "At least 1 number", checked: /\d/.test(formData.password) },
@@ -152,6 +153,16 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
     onLogin(mockUser);
   };
 
+  const handleGuestClick = () => {
+    const isProduction = import.meta.env.PROD || window.location.search.includes('prod-preview');
+    if (isProduction) {
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 500);
+    } else {
+      handleGuestLogin();
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -211,9 +222,13 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
                   Google
                 </button>
                 <div className="relative group/guest">
-                  <button
+                  <motion.button
                     type="button"
-                    onClick={handleGuestLogin}
+                    onClick={handleGuestClick}
+                    animate={isShaking ? {
+                      x: [0, -8, 8, -8, 8, -4, 4, 0],
+                      transition: { duration: 0.4 }
+                    } : {}}
                     className={cn(
                       "w-full h-13 py-3.5 rounded-2xl border border-border bg-card flex items-center justify-center gap-2.5 transition-all text-sm font-bold active:scale-95",
                       (import.meta.env.PROD || window.location.search.includes('prod-preview'))
@@ -222,7 +237,7 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
                     )}
                   >
                     <Globe className="h-4 w-4" /> Guest
-                  </button>
+                  </motion.button>
                   {(import.meta.env.PROD || window.location.search.includes('prod-preview')) && (
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-max max-w-[200px] pointer-events-none opacity-0 translate-y-2 group-hover/guest:opacity-100 group-hover/guest:translate-y-0 transition-all duration-300 ease-out z-30">
                       <div className="bg-red-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl shadow-lg shadow-red-500/20 text-center relative">
