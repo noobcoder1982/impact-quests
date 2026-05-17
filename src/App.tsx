@@ -696,6 +696,13 @@ function Root() {
       handleLogout();
     };
     window.addEventListener('auth:unauthorized', onUnauthorized);
+
+    // Differentiate dev tab from live deployment
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      document.title = "🚧 [DEV] ImpactQuest";
+    }
+
     return () => window.removeEventListener('auth:unauthorized', onUnauthorized);
   }, []);
 
