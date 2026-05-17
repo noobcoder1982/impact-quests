@@ -24,7 +24,7 @@ dist-ssr
 *.sw?
 *.pem
 *.key
-*.md
+
 .env
 .env.local
 .env.*
