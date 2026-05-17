@@ -122,6 +122,7 @@
     --border: var(--h) var(--s) var(--theme-l-border);
     --input: var(--h) var(--s) var(--theme-l-border);
     --ring: var(--p);
+    --primary: var(--p);
     --primary-foreground: var(--h) var(--s) var(--theme-l-bg);
   }
 
@@ -304,4 +305,15 @@ aside .scrollbar-hide::-webkit-scrollbar {
       transition-duration: 0.01ms !important;
     }
   }
+}
+
+/* Premium Dynamic Text Selection Highlight */
+::selection {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+::-moz-selection {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }

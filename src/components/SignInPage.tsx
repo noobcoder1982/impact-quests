@@ -10,6 +10,7 @@ import { Button } from "./ui/button"
 import { Link, useNavigate } from "react-router-dom"
 import { useTheme } from "../contexts/ThemeContext"
 import { cn } from "@/lib/utils"
+import { Eye, EyeOff } from "lucide-react"
 
 import { auth, googleProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "../lib/firebase"
 import { apiRequest } from "../lib/api"
@@ -26,6 +27,13 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
     password: '',
     organizationName: '',
   });
+  const [showPassword, setShowPassword] = React.useState(false);
+  const passwordRules = React.useMemo(() => [
+    { label: "Min 6 characters", checked: formData.password.length >= 6 },
+    { label: "At least 1 number", checked: /\d/.test(formData.password) },
+    { label: "At least 1 symbol", checked: /[!@#$%^&*(),.?":{}|<>]/.test(formData.password) },
+    { label: "At least 1 uppercase", checked: /[A-Z]/.test(formData.password) }
+  ], [formData.password]);
   const navigate = useNavigate();
 
   const syncWithBackend = async (token: string, additionalData?: any) => {
@@ -63,6 +71,31 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+
+    // Validate password rules for Signup only
+    if (!isLogin) {
+      const password = formData.password;
+      if (password.length < 6) {
+        setError("Password must be at least 6 characters long.");
+        setIsLoading(false);
+        return;
+      }
+      if (!/\d/.test(password)) {
+        setError("Password must contain at least one number.");
+        setIsLoading(false);
+        return;
+      }
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+        setError("Password must contain at least one special character (symbol).");
+        setIsLoading(false);
+        return;
+      }
+      if (!/[A-Z]/.test(password)) {
+        setError("Password must contain at least one uppercase letter.");
+        setIsLoading(false);
+        return;
+      }
+    }
 
     try {
       let userCredential;
@@ -177,13 +210,29 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
                   </svg>
                   Google
                 </button>
-                <button
-                  type="button"
-                  onClick={handleGuestLogin}
-                  className="h-13 py-3.5 rounded-2xl border border-border bg-card hover:bg-secondary/50 flex items-center justify-center gap-2.5 transition-all text-sm font-bold active:scale-95"
-                >
-                  <Globe className="h-4 w-4" /> Guest
-                </button>
+                <div className="relative group/guest">
+                  <button
+                    type="button"
+                    onClick={handleGuestLogin}
+                    className={cn(
+                      "w-full h-13 py-3.5 rounded-2xl border border-border bg-card flex items-center justify-center gap-2.5 transition-all text-sm font-bold active:scale-95",
+                      (import.meta.env.PROD || window.location.search.includes('prod-preview'))
+                        ? "hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.15)]"
+                        : "hover:bg-secondary/50"
+                    )}
+                  >
+                    <Globe className="h-4 w-4" /> Guest
+                  </button>
+                  {(import.meta.env.PROD || window.location.search.includes('prod-preview')) && (
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-max max-w-[200px] pointer-events-none opacity-0 translate-y-2 group-hover/guest:opacity-100 group-hover/guest:translate-y-0 transition-all duration-300 ease-out z-30">
+                      <div className="bg-red-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl shadow-lg shadow-red-500/20 text-center relative">
+                        only for testing
+                        {/* Little triangle arrow at the bottom */}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-red-500" />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Divider */}
@@ -233,7 +282,7 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
                             value={formData.name}
                             onChange={handleInputChange}
                             placeholder={role === 'volunteer' ? 'Jane Doe' : 'Contact person'}
-                            className="w-full h-14 bg-card border border-border rounded-2xl px-4 text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all placeholder:text-muted-foreground/30"
+                            className="w-full h-14 bg-card text-foreground border border-border rounded-2xl px-4 text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all placeholder:text-muted-foreground/30"
                           />
                         </div>
                         {role === 'ngo' && (
@@ -246,7 +295,7 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
                               value={formData.organizationName}
                               onChange={handleInputChange}
                               placeholder="Global Aid Network"
-                              className="w-full h-14 bg-card border border-border rounded-2xl px-4 text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all placeholder:text-muted-foreground/30"
+                              className="w-full h-14 bg-card text-foreground border border-border rounded-2xl px-4 text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all placeholder:text-muted-foreground/30"
                             />
                           </div>
                         )}
@@ -265,7 +314,7 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="jane@example.com"
-                    className="w-full h-14 bg-card border border-border rounded-2xl px-4 text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all placeholder:text-muted-foreground/30"
+                    className="w-full h-14 bg-card text-foreground border border-border rounded-2xl px-4 text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all placeholder:text-muted-foreground/30"
                   />
                 </div>
 
@@ -279,15 +328,40 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
                       </button>
                     )}
                   </div>
-                  <input
-                    required
-                    name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="••••••••"
-                    className="w-full h-14 bg-card border border-border rounded-2xl px-4 text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all placeholder:text-muted-foreground/30"
-                  />
+                  <div className="relative">
+                    <input
+                      required
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder="••••••••"
+                      className="w-full h-14 bg-card text-foreground border border-border rounded-2xl pl-4 pr-12 text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all placeholder:text-muted-foreground/30"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground active:scale-95 transition-all p-1.5 rounded-xl hover:bg-secondary/40"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                  {!isLogin && (
+                    <div className="mt-3 grid grid-cols-2 gap-2 p-3.5 bg-secondary/30 rounded-2xl border border-border/40">
+                      {passwordRules.map((rule, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-[11px] font-medium transition-colors duration-200">
+                          <div className={`h-2 w-2 rounded-full transition-all duration-300 ${rule.checked ? 'bg-emerald-500 scale-110 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-muted-foreground/30'}`} />
+                          <span className={rule.checked ? 'text-emerald-500 font-bold' : 'text-muted-foreground/60'}>
+                            {rule.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Error / Reset notices */}

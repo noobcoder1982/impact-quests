@@ -69,9 +69,10 @@ ${isCasual ? "Respond briefly and professionally." : `Provide:
     const chatMode = context.mode || 'general';
     const modeInstruction = modeInstructions[chatMode] || modeInstructions.general;
 
-    // Include conversation history for context
-    const conversationContext = context.conversationHistory
-      ? `\n\nRecent Conversation:\n${context.conversationHistory.map(m => `${m.role}: ${m.content}`).join('\n')}`
+    // Include conversation history for context (Optimized to last 5 messages to reduce context window & improve latency)
+    const recentHistory = context.conversationHistory?.slice(-5) || [];
+    const conversationContext = recentHistory.length > 0
+      ? `\n\nRecent Conversation:\n${recentHistory.map(m => `${m.role}: ${m.content}`).join('\n')}`
       : '';
 
     const lengthGuidance = isCasual
@@ -103,19 +104,10 @@ ${isCasual ? "Respond briefly and professionally." : `Provide:
     - Use \`code\` for technical terms
     - Use --- for separators
     
-    IMPORTANT: Return ONLY a JSON object with this exact structure:
-    {
-      "content": "your response here with markdown formatting",
-      "metadata": {
-        "mode": "${chatMode}",
-        "analysis": "brief summary if applicable",
-        "suggestions": ["suggestion1", "suggestion2"],
-        "responseType": "${isCasual ? 'casual' : 'detailed'}"
-      }
-    }
+    IMPORTANT: Return ONLY your raw markdown response. DO NOT wrap it in JSON. DO NOT include any introductory or trailing remarks. Just output the final response text directly.
     `;
 
-    return await callAI(prompt, "google/gemma-3n-e4b-it", chatMode === 'creative' ? 0.9 : 0.7);
+    return await callAI(prompt, "meta/llama3-8b-instruct", chatMode === 'creative' ? 0.9 : 0.7, 512);
   },
 
   // New: Enhanced Mission Analysis
@@ -147,7 +139,7 @@ ${isCasual ? "Respond briefly and professionally." : `Provide:
     }
     `;
 
-    return await callAI(prompt, "google/gemma-3n-e4b-it", 0.3);
+    return await callAI(prompt, "meta/llama3-8b-instruct", 0.3, 512);
   },
 
   generateDashboardInsights: async (tasks, inventory) => {

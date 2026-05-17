@@ -98,24 +98,32 @@ const chat = async (req, res) => {
     const { message, context } = req.body;
     if (!message) return errorResponse(res, 400, "Message is required");
 
-    const user = await User.findById(req.user._id).select('name role skills level points');
-    const [activeTasks, inventorySummary] = await Promise.all([
-      Task.find({ status: { $ne: 'completed' } }).limit(10),
-      Inventory.find({}).limit(15)
+    const user = await User.findById(req.user._id).select('name role skills level points').lean();
+    
+    // Optimize: Use countDocuments instead of fetching full documents to improve database latency
+    const [activeTasksCount, inventorySummaryCount] = await Promise.all([
+      Task.countDocuments({ status: { $ne: 'completed' } }),
+      Inventory.countDocuments({})
     ]);
 
     const enrichedContext = {
       ...context,
       user,
       site_intelligence: {
-        active_missions: activeTasks,
-        inventory_status: inventorySummary,
+        active_missions: { length: activeTasksCount },
+        inventory_status: { length: inventorySummaryCount },
         timestamp: new Date().toISOString()
       }
     };
 
     const aiResponse = await aiService.handleChat(message, enrichedContext);
-    return successResponse(res, 200, "Message processed", aiResponse);
+    
+    // Normalize response: if the LLM returned raw markdown string, wrap it so the frontend doesn't break
+    const normalizedResponse = typeof aiResponse === 'string'
+      ? { content: aiResponse, metadata: { mode: context.mode || 'general' } }
+      : aiResponse;
+      
+    return successResponse(res, 200, "Message processed", normalizedResponse);
   } catch (error) {
     return errorResponse(res, 500, error.message);
   }

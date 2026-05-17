@@ -5,7 +5,7 @@ const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 /**
  * Common AI call wrapper
  */
-const callAI = async (prompt, model = "google/gemma-3n-e4b-it", temperature = 0.1) => {
+const callAI = async (prompt, model = "meta/llama3-8b-instruct", temperature = 0.1, maxTokens = 1024) => {
   const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
   
   if (!NVIDIA_API_KEY) {
@@ -19,7 +19,7 @@ const callAI = async (prompt, model = "google/gemma-3n-e4b-it", temperature = 0.
       model,
       messages: [{ role: "user", content: prompt }],
       temperature,
-      max_tokens: 2048
+      max_tokens: maxTokens
     }, {
       headers: {
         "Authorization": `Bearer ${NVIDIA_API_KEY}`,

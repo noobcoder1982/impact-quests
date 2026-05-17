@@ -366,8 +366,7 @@ export default function AIChatPage() {
     setIsTyping(true);
 
     try {
-      // Simulate typing delay for realism
-      await new Promise(r => setTimeout(r, 600));
+      // Request sent immediately
 
       // Get context
       const currentSession = sessions.find(s => s.id === sessionId);
