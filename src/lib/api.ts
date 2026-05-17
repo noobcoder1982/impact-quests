@@ -1,6 +1,12 @@
 const getApiUrl = () => {
   if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
   const hostname = window.location.hostname;
+  
+  // Automatically use relative API URL on Vercel deployment to support rewrites proxy
+  if (hostname.endsWith('vercel.app')) {
+    return '/api/v1';
+  }
+  
   return `http://${hostname}:5000/api/v1`;
 };
 
