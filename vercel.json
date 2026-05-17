@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/v1/:path*", "destination": "http://your-backend-url.railway.app/api/v1/:path*" },
+    { "source": "/api/v1/:path*", "destination": "https://special-octo-robot-production.up.railway.app/api/v1/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
