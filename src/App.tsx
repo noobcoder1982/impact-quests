@@ -525,8 +525,14 @@ function App({ isAuthenticated, handleLogin, handleLogout }: { isAuthenticated: 
       setUser(JSON.parse(localStorage.getItem('user') || '{}'));
     };
     window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
+    
+    // Sync immediately when authentication state changes
+    handleStorage();
+
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [isAuthenticated]);
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-accent selection:text-white">

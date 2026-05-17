@@ -1,15 +1,17 @@
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
-  ArrowRight01Icon as ArrowRight,
-  Search01Icon as Search,
-  Tick01Icon as Check,
-  UserIcon as User,
-  FlashIcon as Zap,
-  Compass01Icon as Compass,
-  AiChat01Icon as Bot,
-  Award01Icon as Medal
-} from "hugeicons-react"
+  ArrowRight,
+  Search,
+  Check,
+  User,
+  Zap,
+  Award,
+  Sparkles,
+  RotateCw,
+  Plus,
+  Compass
+} from "lucide-react"
 import { Button } from "./ui/button"
 import { apiRequest } from "../lib/api"
 import { useNavigate } from "react-router-dom"
@@ -21,9 +23,32 @@ interface Skill {
   category: string;
 }
 
+const VOLUNTEER_SKILLS = [
+  "Teaching & Mentoring", "Community Outreach", "Event Management", "Fundraising",
+  "Public Speaking", "Leadership", "Team Coordination", "Administration",
+  "Volunteer Coordination", "Healthcare Assistance", "Mental Health Support", "Child Welfare",
+  "Elderly Care", "Animal Welfare", "Environmental Conservation", "Disaster Relief",
+  "Food Distribution", "Logistics Support", "Counseling", "Conflict Resolution",
+  "Social Work", "Advocacy & Awareness", "Cultural Programs", "Sports & Recreation",
+  "Photography", "Videography", "Graphic Design", "Content Writing",
+  "Translation & Interpretation", "Research & Documentation", "Legal Assistance", "Finance & Accounting",
+  "Human Resources", "Training & Workshops", "Hospitality & Guest Support", "Crowd Management",
+  "Emergency Response", "Sustainability Initiatives", "Partnership & Networking", "Creative Arts & Crafts",
+  "Music & Performance Arts", "Project Coordination", "Communication & PR", "Women Empowerment",
+  "Youth Development", "Rural Development", "Accessibility Support", "Community Health",
+  "Relief Camp Support", "General Volunteering"
+];
+
 export default function OnboardingPage() {
   const [step, setStep] = React.useState(1);
-  const [skills, setSkills] = React.useState<Skill[]>([]);
+  const [skills, setSkills] = React.useState<Skill[]>(() => 
+    VOLUNTEER_SKILLS.map((name, idx) => ({
+      _id: `predefined-${idx}`,
+      name,
+      category: "Volunteer Management"
+    }))
+  );
+  const [suggestedSkills, setSuggestedSkills] = React.useState<string[]>([]);
   const [selectedSkills, setSelectedSkills] = React.useState<string[]>([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [nickname, setNickname] = React.useState("");
@@ -31,12 +56,28 @@ export default function OnboardingPage() {
   const [customSkill, setCustomSkill] = React.useState("");
   const navigate = useNavigate();
 
+  // Shuffle 10 random skills from the pre-defined list
+  const shuffleSuggestions = React.useCallback(() => {
+    const shuffled = [...VOLUNTEER_SKILLS].sort(() => 0.5 - Math.random());
+    setSuggestedSkills(shuffled.slice(0, 10));
+  }, []);
+
+  React.useEffect(() => {
+    shuffleSuggestions();
+  }, [shuffleSuggestions]);
+
+  // Fetch additional skills from the backend and merge them cleanly
   React.useEffect(() => {
     const fetchSkills = async () => {
       try {
         const res = await apiRequest('/skills');
-        if (res.success) {
-          setSkills(res.data.skills);
+        if (res.success && res.data.skills.length > 0) {
+          const fetched = res.data.skills;
+          setSkills(prev => {
+            const existingNames = new Set(prev.map(s => s.name.toLowerCase()));
+            const uniqueFetched = fetched.filter((s: Skill) => !existingNames.has(s.name.toLowerCase()));
+            return [...prev, ...uniqueFetched];
+          });
         }
       } catch (err) {
         console.error("Failed to fetch skills", err);
@@ -61,7 +102,7 @@ export default function OnboardingPage() {
   };
 
   const generateNickname = () => {
-    if (selectedSkills.length === 0) return "Anonymous_Operator";
+    if (selectedSkills.length === 0) return "Operator_Node";
     const prefix = selectedSkills[0].replace(/\s+/g, '');
     const suffix = Math.floor(1000 + Math.random() * 9000);
     return `${prefix}_${suffix}`;
@@ -86,7 +127,6 @@ export default function OnboardingPage() {
       });
 
       if (res.success) {
-        // Update local storage user data
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         user.nickname = nickname;
         user.selectedSkills = selectedSkills;
@@ -102,228 +142,320 @@ export default function OnboardingPage() {
     }
   };
 
+  // Filter skills based on search query
   const filteredSkills = skills.filter(s => 
     s.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-indigo-600/30 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `radial-gradient(circle at 2px 2px, #312e81 1px, transparent 0)`, backgroundSize: '40px 40px' }} />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-indigo-600/10 blur-[200px] rounded-full animate-pulse" />
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-indigo-600/30 flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Dynamic Cinematic Background Grid */}
+      <div className="absolute inset-0 opacity-15" style={{ backgroundImage: `radial-gradient(circle at 2px 2px, #4f46e5 1.5px, transparent 0)`, backgroundSize: '36px 36px' }} />
+      <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-indigo-600/10 blur-[150px] rounded-full" />
+      <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-indigo-500/10 blur-[150px] rounded-full" />
 
-      <div className="max-w-4xl w-full relative z-10">
+      <div className="max-w-3xl w-full relative z-10">
         <AnimatePresence mode="wait">
+          
+          {/* STEP 1: INITIALIZED CALIBRATION */}
           {step === 1 && (
             <motion.div 
               key="step1"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="text-center space-y-8"
+              exit={{ opacity: 0, y: -15 }}
+              className="glass-card bg-white/[0.02] border border-white/[0.08] backdrop-blur-2xl rounded-[2.5rem] p-10 md:p-14 text-center space-y-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.4)]"
             >
-              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-indigo-600/10 border border-indigo-600/20 text-indigo-500 text-[10px] font-black uppercase tracking-[0.4em]">
-                <Zap size={14} /> System Initialized
+              <div className="inline-flex items-center gap-2.5 px-4.5 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> Calibration Node Active
               </div>
-              <h1 className="text-7xl font-black tracking-tighter lowercase leading-tight">
-                welcome to the <br/> <span className="text-indigo-600 italic">impactquest</span> network.
+              <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-[1.05] text-white">
+                Welcome to the <br/> <span className="text-indigo-500 italic font-black">ImpactQuest</span> network.
               </h1>
-              <p className="text-xl text-white/40 max-w-2xl mx-auto italic leading-relaxed">
-                "You have successfully registered your operator node. Before deployment, we need to calibrate your profile and identify your tactical specialties."
+              <p className="text-base md:text-lg text-white/50 max-w-xl mx-auto font-medium leading-relaxed">
+                Before deploying operator commands, we need to calibrate your custom specialties and establish your tactical identity on the grid.
               </p>
-              <Button 
-                onClick={() => setStep(2)}
-                className="h-20 px-12 rounded-[2rem] bg-indigo-600 text-white text-xl font-black tracking-widest gap-4 hover:scale-105 transition-all shadow-2xl shadow-indigo-600/20"
-              >
-                begin calibration <ArrowRight size={20} />
-              </Button>
+              <div className="pt-4">
+                <Button 
+                  onClick={() => setStep(2)}
+                  className="h-18 px-10 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-base font-black tracking-wider gap-3 hover:scale-[1.02] active:scale-98 transition-all shadow-xl shadow-indigo-600/20"
+                >
+                  Begin Calibration <ArrowRight size={18} />
+                </Button>
+              </div>
             </motion.div>
           )}
 
+          {/* STEP 2: DEFINE SPECIALTIES */}
           {step === 2 && (
             <motion.div 
               key="step2"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="space-y-8"
+              className="glass-card bg-white/[0.02] border border-white/[0.08] backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 space-y-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.4)]"
             >
-              <div className="flex justify-between items-end">
-                <div className="space-y-2">
-                  <div className="text-indigo-500 text-[10px] font-black uppercase tracking-[0.4em]">Step 02 / 03</div>
-                  <h2 className="text-5xl font-black tracking-tighter lowercase">define your <span className="text-indigo-600 italic">skillset.</span></h2>
-                  <p className="text-white/40 italic">Select up to 5 tactical specialties from the database.</p>
+              {/* Refreshed Step Header */}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-white/[0.05] pb-6">
+                <div className="space-y-1.5">
+                  <div className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.3em]">Calibration Node / Step 02 of 03</div>
+                  <h2 className="text-4xl font-black tracking-tight text-white">Define your <span className="text-indigo-500 italic">specialties.</span></h2>
+                  <p className="text-white/40 text-sm font-medium">Select up to 5 areas of expertise you wish to contribute to.</p>
                 </div>
-                <div className="text-right">
-                  <div className="text-4xl font-black text-indigo-600">{selectedSkills.length}<span className="text-white/20">/5</span></div>
-                  <div className="text-[10px] font-black uppercase tracking-widest text-white/20">Selected</div>
+                <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl px-5 py-3 text-center min-w-[100px]">
+                  <div className="text-3xl font-black text-indigo-400">{selectedSkills.length}<span className="text-white/20">/5</span></div>
+                  <div className="text-[9px] font-black uppercase tracking-widest text-white/40 mt-0.5">Selected</div>
                 </div>
               </div>
 
-              {/* Skill Search & Selection */}
+              {/* Real-time Chosen Chips */}
+              <div className="flex flex-wrap gap-2.5 min-h-[44px]">
+                {selectedSkills.map(skill => (
+                  <motion.button
+                    layoutId={`selected-skill-${skill}`}
+                    key={skill}
+                    onClick={() => toggleSkill(skill)}
+                    className="px-4.5 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold flex items-center gap-2 hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-600/10 group"
+                  >
+                    {skill} <Check size={13} className="opacity-80" />
+                  </motion.button>
+                ))}
+                {selectedSkills.length === 0 && (
+                  <div className="text-white/20 text-xs font-bold italic py-2">No specialties locked in yet...</div>
+                )}
+              </div>
+
+              {/* Dynamic Search & Input Wrapper */}
               <div className="space-y-6">
+                
+                {/* Search Field */}
                 <div className="relative group">
-                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-indigo-600 transition-colors" />
+                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-indigo-400 transition-colors" size={18} />
                   <input 
                     type="text" 
-                    placeholder="Search tactical database (e.g. Python, Crisis Management)..."
+                    placeholder="Search volunteer database (e.g. Disaster Relief, Public Speaking, Community Outreach)..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full h-20 bg-white/5 border border-white/10 rounded-[1.5rem] pl-16 pr-8 text-lg font-bold outline-none focus:border-indigo-600/50 transition-all placeholder:text-white/10"
+                    className="w-full h-15 bg-white/[0.03] border border-white/[0.08] rounded-2xl pl-13 pr-6 text-sm font-semibold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20 text-white"
                   />
                 </div>
 
-                {/* Selected Tags */}
-                <div className="flex flex-wrap gap-3">
-                  {selectedSkills.map(skill => (
-                    <motion.button
-                      layoutId={`skill-${skill}`}
-                      key={skill}
-                      onClick={() => toggleSkill(skill)}
-                      className="px-6 py-3 rounded-2xl bg-indigo-600 text-white text-sm font-black flex items-center gap-3 shadow-lg shadow-indigo-600/20 group"
-                    >
-                      {skill} <Check size={14} className="opacity-60" />
-                    </motion.button>
-                  ))}
-                  {selectedSkills.length === 0 && (
-                    <div className="text-white/10 text-sm font-bold italic py-3">No skills selected yet...</div>
-                  )}
-                </div>
-
-                <div className="h-[350px] overflow-y-auto pr-4 space-y-4 custom-scrollbar">
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {filteredSkills.map(skill => (
-                      <button
-                        key={skill._id}
-                        onClick={() => toggleSkill(skill.name)}
-                        disabled={selectedSkills.length >= 5 && !selectedSkills.includes(skill.name)}
-                        className={cn(
-                          "p-4 rounded-2xl border text-left transition-all group relative overflow-hidden",
-                          selectedSkills.includes(skill.name) 
-                            ? "bg-indigo-600/20 border-indigo-600/50 text-indigo-500" 
-                            : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:border-white/20 disabled:opacity-30"
-                        )}
-                      >
-                        <div className="font-bold tracking-tight">{skill.name}</div>
-                        {selectedSkills.includes(skill.name) && (
-                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-2 right-2">
-                            <Check size={12} className="text-indigo-500" />
-                          </motion.div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
+                {/* Grid of Results / Predefined Suggestions */}
+                <div className="space-y-4">
                   
+                  {/* CASE 1: Searching inside the Database */}
+                  {searchQuery.trim().length > 0 ? (
+                    <div className="space-y-3">
+                      <div className="text-[10px] font-black uppercase tracking-widest text-white/40">Search Results</div>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
+                        {filteredSkills.slice(0, 24).map(skill => {
+                          const isSelected = selectedSkills.includes(skill.name);
+                          return (
+                            <button
+                              key={skill._id}
+                              onClick={() => toggleSkill(skill.name)}
+                              disabled={selectedSkills.length >= 5 && !isSelected}
+                              className={cn(
+                                "p-3 rounded-xl border text-left text-xs font-bold transition-all relative overflow-hidden group/btn",
+                                isSelected 
+                                  ? "bg-indigo-600/20 border-indigo-500/50 text-indigo-400" 
+                                  : "bg-white/[0.02] border-white/[0.06] text-white/50 hover:bg-white/[0.05] hover:text-white hover:border-white/20 disabled:opacity-30"
+                              )}
+                            >
+                              <div className="truncate pr-4">{skill.name}</div>
+                              {isSelected && (
+                                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-3 right-3">
+                                  <Check size={12} className="text-indigo-400" />
+                                </motion.div>
+                              )}
+                            </button>
+                          );
+                        })}
+                        {filteredSkills.length === 0 && (
+                          <div className="col-span-full text-center text-white/30 text-xs font-bold italic py-6">
+                            No matching specialties found. Type in "Other specialty" below to add a custom one!
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    // CASE 2: Showing 10 Random Quick Suggestions
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-indigo-400">
+                          <Sparkles size={12} /> Suggested Specialties
+                        </div>
+                        <button
+                          type="button"
+                          onClick={shuffleSuggestions}
+                          className="flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-white/30 hover:text-white transition-all bg-white/[0.03] border border-white/[0.06] rounded-lg px-2.5 py-1.5 active:scale-95"
+                        >
+                          <RotateCw size={10} /> Shuffle Suggestions
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        {suggestedSkills.map(skillName => {
+                          const isSelected = selectedSkills.includes(skillName);
+                          return (
+                            <button
+                              type="button"
+                              key={skillName}
+                              onClick={() => toggleSkill(skillName)}
+                              disabled={selectedSkills.length >= 5 && !isSelected}
+                              className={cn(
+                                "p-3 rounded-xl border text-left text-xs font-bold transition-all relative group/pill truncate",
+                                isSelected 
+                                  ? "bg-indigo-600/20 border-indigo-500/50 text-indigo-400 shadow-md shadow-indigo-600/5" 
+                                  : "bg-white/[0.02] border-white/[0.06] text-white/50 hover:bg-white/[0.05] hover:text-white hover:border-white/20 disabled:opacity-30"
+                              )}
+                            >
+                              <div className="truncate pr-4">{skillName}</div>
+                              {isSelected && (
+                                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-3 right-3">
+                                  <Check size={12} className="text-indigo-400" />
+                                </motion.div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Custom Skill Input */}
-                  <div className="pt-6 border-t border-white/5">
-                    <div className="flex gap-4">
+                  <div className="pt-6 border-t border-white/[0.05] space-y-2">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30">Or lock in a custom specialty</div>
+                    <div className="flex gap-3">
                       <input 
                         type="text" 
-                        placeholder="Other specialty..."
+                        placeholder="Other custom specialty..."
                         value={customSkill}
                         onChange={(e) => setCustomSkill(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleAddCustomSkill()}
-                        className="flex-1 h-14 bg-white/5 border border-white/10 rounded-xl px-6 text-sm font-bold outline-none focus:border-indigo-600/50 transition-all"
+                        className="flex-1 h-12 bg-white/[0.03] border border-white/[0.08] rounded-xl px-5 text-xs font-semibold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20 text-white"
                       />
-                      <Button 
-                        variant="secondary" 
+                      <button 
+                        type="button"
                         onClick={handleAddCustomSkill}
-                        className="h-14 px-8 rounded-xl font-black uppercase text-[10px] tracking-widest"
+                        disabled={!customSkill.trim() || selectedSkills.length >= 5}
+                        className="h-12 px-6 rounded-xl bg-white/10 hover:bg-white/15 text-white disabled:opacity-30 disabled:pointer-events-none transition-all text-xs font-black uppercase tracking-wider flex items-center gap-1.5 border border-white/[0.05]"
                       >
-                        Add Custom
-                      </Button>
+                        <Plus size={14} /> Add Custom
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-between pt-8">
-                <Button variant="ghost" onClick={() => setStep(1)} className="h-16 px-8 rounded-2xl text-white/40 hover:text-white uppercase text-[10px] font-black tracking-widest">Back</Button>
+              {/* Step Navigation */}
+              <div className="flex justify-between pt-6 border-t border-white/[0.05]">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setStep(1)} 
+                  className="h-13 px-6 rounded-xl text-white/40 hover:text-white uppercase text-[10px] font-black tracking-widest"
+                >
+                  Back
+                </Button>
                 <Button 
                   onClick={handleNextStep}
                   disabled={selectedSkills.length === 0}
-                  className="h-16 px-12 rounded-2xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest gap-3 shadow-lg shadow-indigo-600/20"
+                  className="h-13 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase text-[10px] tracking-widest gap-2 shadow-lg shadow-indigo-600/10 hover:scale-[1.02] active:scale-98 transition-all"
                 >
-                  Confirm specialties <ArrowRight size={16} />
+                  Lock in specialties <ArrowRight size={14} />
                 </Button>
               </div>
             </motion.div>
           )}
 
+          {/* STEP 3: ESTABLISH ALIAS */}
           {step === 3 && (
             <motion.div 
               key="step3"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="text-center space-y-12"
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="glass-card bg-white/[0.02] border border-white/[0.08] backdrop-blur-2xl rounded-[2.5rem] p-10 md:p-12 space-y-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.4)]"
             >
-              <div className="space-y-4">
-                <div className="text-indigo-500 text-[10px] font-black uppercase tracking-[0.4em]">Final Step / Neural Link</div>
-                <h2 className="text-6xl font-black tracking-tighter lowercase">establish your <span className="text-indigo-600 italic">alias.</span></h2>
-                <p className="text-white/40 italic">"In the interest of operational security, your real name is private. Choose your network handle."</p>
+              <div className="text-center space-y-3">
+                <div className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.3em]">Calibration Node / Final Calibration</div>
+                <h2 className="text-4xl font-black tracking-tight text-white">Establish your <span className="text-indigo-500 italic">alias.</span></h2>
+                <p className="text-white/40 text-sm font-medium max-w-md mx-auto">Choose a tactical nickname that will identify your operator node on the grid.</p>
               </div>
 
-              <div className="max-w-md mx-auto space-y-8">
+              <div className="max-w-md mx-auto space-y-6">
+                
+                {/* Nickname Capsule */}
                 <div className="relative group">
-                  <User className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-indigo-600 transition-colors" />
+                  <User className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-indigo-400 transition-colors" size={22} />
                   <input 
                     type="text" 
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
-                    className="w-full h-24 bg-white/5 border border-white/10 rounded-[2rem] pl-20 pr-8 text-3xl font-black tracking-tighter text-indigo-500 outline-none focus:border-indigo-600/50 transition-all text-center"
+                    className="w-full h-20 bg-white/[0.03] border border-white/[0.08] rounded-2xl pl-16 pr-6 text-2xl font-black tracking-tight text-indigo-400 outline-none focus:border-indigo-500/50 transition-all text-center focus:shadow-md focus:shadow-indigo-600/5"
                   />
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-black border border-white/10 rounded-full text-[8px] font-black uppercase tracking-widest text-white/40">Network handle</div>
+                  <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-black border border-white/[0.08] rounded-full text-[8px] font-black uppercase tracking-widest text-white/40">Codename</div>
                 </div>
 
-                <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 space-y-6">
-                  <div className="text-[9px] font-black uppercase tracking-widest text-white/30">Calibration Summary</div>
-                  <div className="flex flex-wrap justify-center gap-2">
+                {/* Summary Matrix */}
+                <div className="p-6 rounded-2xl bg-white/[0.01] border border-white/[0.06] space-y-5">
+                  <div className="text-[9px] font-black uppercase tracking-widest text-white/30 text-center">Locked Specialties Matrix</div>
+                  <div className="flex flex-wrap justify-center gap-1.5">
                     {selectedSkills.map(s => (
-                      <span key={s} className="px-3 py-1 rounded-full bg-indigo-600/10 border border-indigo-600/20 text-indigo-500 text-[10px] font-bold">{s}</span>
+                      <span key={s} className="px-3 py-1.5 rounded-lg bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold">{s}</span>
                     ))}
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
-                      <div className="text-[8px] font-black uppercase tracking-widest text-white/20 mb-1">Impact Quotient</div>
-                      <div className="text-xl font-black italic">0.00</div>
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <div className="p-3.5 rounded-xl bg-black/40 border border-white/[0.03] text-center">
+                      <div className="text-[8px] font-black uppercase tracking-widest text-white/20 mb-0.5">Tactical Rank</div>
+                      <div className="text-base font-black text-indigo-400 italic">Novice</div>
                     </div>
-                    <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
-                      <div className="text-[8px] font-black uppercase tracking-widest text-white/20 mb-1">System Rank</div>
-                      <div className="text-xl font-black italic text-indigo-600">Novice</div>
+                    <div className="p-3.5 rounded-xl bg-black/40 border border-white/[0.03] text-center">
+                      <div className="text-[8px] font-black uppercase tracking-widest text-white/20 mb-0.5">Node Score</div>
+                      <div className="text-base font-black text-white italic">0.00</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col items-center gap-6">
+              {/* Submit / Finish buttons */}
+              <div className="flex flex-col items-center gap-4 pt-4">
                 <Button 
                   onClick={handleSubmit}
-                  disabled={!nickname || isSubmitting}
-                  className="h-24 px-16 rounded-[2.5rem] bg-indigo-600 text-white text-2xl font-black tracking-[0.2em] gap-6 shadow-2xl shadow-indigo-600/40 hover:scale-105 active:scale-95 transition-all lowercase"
+                  disabled={!nickname.trim() || isSubmitting}
+                  className="h-16 px-12 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-base font-black tracking-wider gap-3 shadow-xl shadow-indigo-600/20 hover:scale-[1.02] active:scale-98 transition-all"
                 >
-                  {isSubmitting ? 'Synchronizing...' : 'Deploy to Network'} <Medal size={24} />
+                  {isSubmitting ? 'Syncing Profile...' : 'Lock Profile & Deploy'} <Award size={18} />
                 </Button>
-                <button onClick={() => setStep(2)} className="text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-indigo-600 transition-colors">Recalibrate Specialties</button>
+                <button 
+                  type="button"
+                  onClick={() => setStep(2)} 
+                  className="text-[9px] font-black uppercase tracking-widest text-white/30 hover:text-indigo-400 transition-colors"
+                >
+                  Recalibrate specialties
+                </button>
               </div>
             </motion.div>
           )}
+
         </AnimatePresence>
       </div>
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
+          width: 5px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.02);
-          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.01);
+          border-radius: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
           background: rgba(99, 102, 241, 0.2);
-          border-radius: 10px;
+          border-radius: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: rgba(99, 102, 241, 0.4);
+          border-radius: 8px;
         }
       `}</style>
     </div>
