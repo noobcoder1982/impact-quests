@@ -1,6 +1,6 @@
 import * as React from "react"
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion"
-import { Routes, Route, Link, useLocation, useNavigate, Navigate } from "react-router-dom"
+import { Routes, Route, Link, useLocation, useNavigate, Navigate, Outlet } from "react-router-dom"
 import { Button } from "./components/ui/button"
 import Home from "./components/Home"
 import Marketplace from "./components/Marketplace"
@@ -69,7 +69,7 @@ const MarketIcon = ShoppingBasket01Icon;
 const FlashIconNav = Zap;
 import { cn } from "@/lib/utils"
 
-function AppLayout({ children, onLogout }: { children: React.ReactNode, onLogout: () => void }) {
+function AppLayout({ onLogout }: { onLogout: () => void }) {
   const location = useLocation();
   
   return (
@@ -86,7 +86,7 @@ function AppLayout({ children, onLogout }: { children: React.ReactNode, onLogout
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="flex-1 flex flex-col min-w-0 h-full overflow-y-auto"
           >
-            {children}
+            <Outlet />
           </motion.div>
         </AnimatePresence>
       </div>
@@ -568,99 +568,44 @@ function App({ isAuthenticated, handleLogin, handleLogout }: { isAuthenticated: 
           <Route path="/features" element={<FeaturesPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
           
-          {/* Main App Routes with Completion Check */}
+          {/* Main App Routes under parent AppLayout */}
           <Route 
-            path="/dashboard" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><DashboardPage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/planner" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><PlannerPage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/mission-lab" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><MissionLab /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/ai-console" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><AIChatPage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/map" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><MapIntelligencePage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route
-            path="/inventory"
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><InventoryPage /></AppLayout>) : <Navigate to="/signin" />}
-          />
-          <Route 
-            path="/marketplace" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><Marketplace /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/quests" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><Marketplace /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/groups" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><GroupsPage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/chat" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><ChatPage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/chatbot" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><ChatPage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-           <Route 
-            path="/activity" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><ActivityLogPage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/contributions" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><ContributionsPage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/achievements" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><AchievementsPage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/impact-score" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><ImpactScorePage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/team-missions" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><TeamMissionsPage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route
-            path="/assignments"
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><AssignmentsPage /></AppLayout>) : <Navigate to="/signin" />}
-          />
-          <Route
-            path="/energy"
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><EnergyDashboardPage /></AppLayout>) : <Navigate to="/signin" />}
-          />
-          <Route
-            path="/alerts"
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><AlertsPage /></AppLayout>) : <Navigate to="/signin" />}
-          />
-          <Route 
-            path="/settings" 
-            element={isAuthenticated ? (isOnboardingRequired ? <Navigate to="/onboarding" replace /> : <AppLayout onLogout={handleLogout}><SettingsPage /></AppLayout>) : <Navigate to="/signin" />} 
-          />
-          <Route 
-            path="/profile" 
-            element={isAuthenticated ? <AppLayout onLogout={handleLogout}><ProfilePage /></AppLayout> : <Navigate to="/signin" />} 
-          />
-          <Route
-            path="/admin"
-            element={isAuthenticated ? <AppLayout onLogout={handleLogout}><AdminPanel /></AppLayout> : <Navigate to="/signin" />}
-          />
-          <Route
-            path="/ngo-verify"
-            element={isAuthenticated ? <AppLayout onLogout={handleLogout}><NgoVerificationPage /></AppLayout> : <Navigate to="/signin" />}
-          />
+            element={
+              isAuthenticated ? (
+                isOnboardingRequired ? (
+                  <Navigate to="/onboarding" replace />
+                ) : (
+                  <AppLayout onLogout={handleLogout} />
+                )
+              ) : (
+                <Navigate to="/signin" />
+              )
+            }
+          >
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/planner" element={<PlannerPage />} />
+            <Route path="/mission-lab" element={<MissionLab />} />
+            <Route path="/ai-console" element={<AIChatPage />} />
+            <Route path="/map" element={<MapIntelligencePage />} />
+            <Route path="/inventory" element={<InventoryPage />} />
+            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/quests" element={<Marketplace />} />
+            <Route path="/groups" element={<GroupsPage />} />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/chatbot" element={<ChatPage />} />
+            <Route path="/activity" element={<ActivityLogPage />} />
+            <Route path="/contributions" element={<ContributionsPage />} />
+            <Route path="/achievements" element={<AchievementsPage />} />
+            <Route path="/impact-score" element={<ImpactScorePage />} />
+            <Route path="/team-missions" element={<TeamMissionsPage />} />
+            <Route path="/assignments" element={<AssignmentsPage />} />
+            <Route path="/energy" element={<EnergyDashboardPage />} />
+            <Route path="/alerts" element={<AlertsPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/ngo-verify" element={<NgoVerificationPage />} />
+          </Route>
           <Route
             path="*"
             element={<NotFoundPage />}
