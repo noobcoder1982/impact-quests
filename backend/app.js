@@ -11,12 +11,27 @@ const app = express();
 // SECURITY MIDDLEWARE
 // ─────────────────────────────────────────────
 
-// Set security HTTP headers
-app.use(helmet());
+// Set security HTTP headers - allow cross-origin resource sharing
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
-// Enable CORS
+// Enable CORS with dynamic local IP & localhost support for dev
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
+    // Allow any localhost, 127.0.0.1, or local area network (192.168.x.x) during development
+    const isLocal = origin.startsWith('http://localhost:') || 
+                    origin.startsWith('http://127.0.0.1:') || 
+                    /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/.test(origin);
+                    
+    if (isLocal || origin === process.env.CORS_ORIGIN || process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    
+    return callback(null, false);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],

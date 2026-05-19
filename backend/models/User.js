@@ -247,6 +247,21 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
+    // ── Admin & NGO Verification ──────────────
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+    isNgoVerified: {
+      type: Boolean,
+      default: false,
+    },
+    ngoVerificationStatus: {
+      type: String,
+      enum: ['none', 'pending', 'approved', 'rejected'],
+      default: 'none',
+    },
+
     // ── Refresh Token ─────────────────────────
     refreshToken: {
       type: String,

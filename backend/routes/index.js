@@ -14,6 +14,7 @@ const aiRoutes = require('./ai.routes');
 const inventoryRoutes = require('./inventory.routes');
 const energyRoutes = require('./energy.routes');
 const smartAllocationRoutes = require('./smartAllocation.routes');
+const adminRoutes = require('./admin.routes');
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -23,5 +24,6 @@ router.use('/ai', aiRoutes);
 router.use('/inventory', inventoryRoutes);
 router.use('/energy', energyRoutes);
 router.use('/smart-allocation', smartAllocationRoutes);
+router.use('/admin', adminRoutes);
 
 module.exports = router;

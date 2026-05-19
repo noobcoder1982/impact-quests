@@ -33,6 +33,8 @@ import LoadingScreen from "./components/LoadingScreen"
 import PricingPage from "./components/PricingPage"
 import ChangelogPage from "./components/ChangelogPage"
 import EnergyDashboardPage from "./components/EnergyDashboardPage"
+import AdminPanel from "./components/AdminPanel"
+import NgoVerificationPage from "./components/NgoVerificationPage"
 import { AnimatedThemeToggler } from "./components/ui/animated-theme-toggler"
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext"
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext"
@@ -388,7 +390,7 @@ function Navbar({ isAuthenticated, onLogout }: { isAuthenticated: boolean, onLog
   const { theme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
-  const isAppPage = location.pathname !== "/" && location.pathname !== "/about" && location.pathname !== "/contact" && location.pathname !== "/signin" && location.pathname !== "/features" && location.pathname !== "/resources" && location.pathname !== "/pricing";
+  const isAppPage = location.pathname !== "/" && location.pathname !== "/about" && location.pathname !== "/contact" && location.pathname !== "/signin" && location.pathname !== "/features" && location.pathname !== "/resources" && location.pathname !== "/pricing" && location.pathname !== "/admin" && location.pathname !== "/ngo-verify";
 
   if (isAppPage) return null;
 
@@ -515,6 +517,10 @@ function App({ isAuthenticated, handleLogin, handleLogout }: { isAuthenticated: 
   
   const isOnboardingRequired = React.useMemo(() => {
     if (!isAuthenticated || !user || Object.keys(user).length === 0) return false;
+    
+    // Admins always skip onboarding
+    if (user.isAdmin || user.email === 'abhijeetpanda21@gmail.com') return false;
+
     const userRole = (user.role || '').toLowerCase();
     if (userRole !== 'volunteer') return false;
 
@@ -644,6 +650,14 @@ function App({ isAuthenticated, handleLogin, handleLogout }: { isAuthenticated: 
             path="/profile" 
             element={isAuthenticated ? <AppLayout onLogout={handleLogout}><ProfilePage /></AppLayout> : <Navigate to="/signin" />} 
           />
+          <Route
+            path="/admin"
+            element={isAuthenticated ? <AppLayout onLogout={handleLogout}><AdminPanel /></AppLayout> : <Navigate to="/signin" />}
+          />
+          <Route
+            path="/ngo-verify"
+            element={isAuthenticated ? <AppLayout onLogout={handleLogout}><NgoVerificationPage /></AppLayout> : <Navigate to="/signin" />}
+          />
         </Routes>
       </main>
     </div>
@@ -678,7 +692,8 @@ function Root() {
   })
 
   const handleLogin = (user?: any) => {
-    setIsAuthenticated(true)
+    setIsAuthenticated(true);
+    window.dispatchEvent(new Event('storage'));
   }
 
   const handleLogout = React.useCallback(() => {

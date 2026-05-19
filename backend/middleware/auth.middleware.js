@@ -22,18 +22,41 @@ const protect = async (req, res, next) => {
       });
     }
 
-    // Allow guest token in development/local mode
-    if (token === 'guest-token-123' && process.env.NODE_ENV !== 'production') {
-      let guestUser = await User.findOne({ email: 'guest@impactquest.org' });
+    // Allow guest tokens in development/local mode
+    if ((token === 'guest-token-123' || token === 'guest-token-ngo' || token === 'guest-token-admin') && process.env.NODE_ENV !== 'production') {
+      let email = 'guest@impactquest.org';
+      let name = 'Guest Volunteer';
+      let role = 'volunteer';
+      let isAdmin = false;
+
+      if (token === 'guest-token-ngo') {
+        email = 'testngo@impactquest.org';
+        name = 'Test NGO Admin';
+        role = 'ngo';
+      } else if (token === 'guest-token-admin') {
+        email = 'abhijeetpanda21@gmail.com';
+        name = 'Admin User';
+        role = 'volunteer';
+        isAdmin = true;
+      }
+
+      let guestUser = await User.findOne({ email });
       
       if (!guestUser) {
         guestUser = await User.create({
-          name: 'Guest Volunteer',
-          email: 'guest@impactquest.org',
-          role: 'volunteer',
+          name,
+          email,
+          role,
+          isAdmin,
           isOnboarded: true,
-          firebaseUid: 'guest-uid-123'
+          firebaseUid: `guest-uid-${role}-${isAdmin ? 'admin' : 'user'}`,
         });
+      } else {
+        // Keep role and admin status synced in local db
+        let updated = false;
+        if (guestUser.role !== role) { guestUser.role = role; updated = true; }
+        if (guestUser.isAdmin !== isAdmin) { guestUser.isAdmin = isAdmin; updated = true; }
+        if (updated) { await guestUser.save(); }
       }
       
       req.user = guestUser;

@@ -137,6 +137,15 @@ export default function OnboardingPage() {
       }
     } catch (err) {
       console.error("Onboarding failed", err);
+      // Fallback for local testing/mock accounts so they never get stuck
+      if (!(import.meta.env.PROD || window.location.search.includes('prod-preview'))) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        user.nickname = nickname;
+        user.selectedSkills = selectedSkills;
+        user.isOnboarded = true;
+        localStorage.setItem('user', JSON.stringify(user));
+        window.location.href = '/dashboard';
+      }
     } finally {
       setIsSubmitting(false);
     }

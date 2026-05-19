@@ -193,7 +193,17 @@ export default function ProfilePage() {
         </div>
 
         <p className="text-[9px] font-black uppercase tracking-[0.4em] text-indigo-400 mb-1">Strategic Operator</p>
-        <h1 className="text-3xl font-black tracking-tighter text-foreground mb-3">{user.name}</h1>
+        <div className="flex items-center gap-2 mb-1">
+          <h1 className="text-3xl font-black tracking-tighter text-foreground">{user.name}</h1>
+          {user.isNgoVerified && (
+            <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-500 text-white text-[8px] font-black uppercase tracking-widest shrink-0">
+              <ShieldCheck className="h-2.5 w-2.5" /> NGO
+            </span>
+          )}
+        </div>
+        {user.role === 'ngo' && user.organizationName && (
+          <p className="text-xs font-medium text-muted-foreground/60 mb-1">{user.organizationName}</p>
+        )}
 
         <div className="flex flex-wrap gap-2 mb-5">
           <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50 border border-border/50 text-[10px] font-black uppercase tracking-widest">
@@ -230,6 +240,40 @@ export default function ProfilePage() {
         >
           Edit Profile
         </motion.button>
+
+        {/* NGO Verified Badge + Verify CTA */}
+        {user.role === 'ngo' && user.isNgoVerified && (
+          <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+            <ShieldCheck className="h-4 w-4 text-emerald-500" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Verified NGO</span>
+          </div>
+        )}
+        {user.role === 'ngo' && !user.isNgoVerified && user.ngoVerificationStatus !== 'pending' && user.ngoVerificationStatus !== 'under_review' && (
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/ngo-verify')}
+            className="w-full h-12 rounded-2xl border-2 border-emerald-500/40 bg-emerald-500/10 text-emerald-600 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all"
+          >
+            <ShieldCheck className="h-4 w-4" /> Get NGO Verified
+          </motion.button>
+        )}
+        {user.role === 'ngo' && (user.ngoVerificationStatus === 'pending' || user.ngoVerificationStatus === 'under_review') && (
+          <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/20">
+            <ShieldCheck className="h-4 w-4 text-amber-500" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">Verification Pending</span>
+          </div>
+        )}
+
+        {/* Admin Panel Button */}
+        {(user.isAdmin || user.email === 'abhijeetpanda21@gmail.com') && (
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/admin')}
+            className="w-full h-12 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 active:scale-95 transition-all"
+          >
+            🛡️ Admin Panel
+          </motion.button>
+        )}
       </div>
 
       {/* ── Stats row ── */}
@@ -459,9 +503,19 @@ export default function ProfilePage() {
 
                <div className="space-y-6 text-center md:text-left">
                   <div className="space-y-1">
-                     <span className="text-[10px] font-black uppercase tracking-[0.5em] text-indigo-400">Strategic Operator</span>
-                     <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-foreground">{user.name}</h1>
-                  </div>
+                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-indigo-400">Strategic Operator</span>
+                      <div className="flex items-center gap-4 flex-wrap">
+                        <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-foreground">{user.name}</h1>
+                        {user.isNgoVerified && (
+                          <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500 text-white text-[9px] font-black uppercase tracking-widest shrink-0 shadow-lg shadow-emerald-500/30">
+                            <ShieldCheck className="h-3 w-3" /> Verified NGO
+                          </span>
+                        )}
+                      </div>
+                      {user.role === 'ngo' && user.organizationName && (
+                        <p className="text-base font-medium text-muted-foreground/60">{user.organizationName}</p>
+                      )}
+                   </div>
                   
                   <div className="flex flex-wrap items-center justify-center md:justify-start gap-6">
                      <div className="flex items-center gap-3 bg-secondary/50 px-4 py-2 rounded-2xl border border-border/60">
@@ -493,7 +547,8 @@ export default function ProfilePage() {
                </div>
             </div>
 
-            <div className="flex gap-4 w-full lg:w-auto">
+            <div className="flex flex-col gap-3 w-full lg:w-auto">
+              <div className="flex gap-3">
                <Button 
                 onClick={() => setIsEditing(true)}
                 className="flex-1 lg:flex-none h-16 px-10 rounded-[2rem] bg-foreground text-background font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl"
@@ -503,6 +558,28 @@ export default function ProfilePage() {
                <Button variant="outline" className="h-16 w-16 rounded-[2rem] border-border bg-card hover:bg-secondary active:scale-95 transition-all">
                   <Settings className="h-6 w-6 text-muted-foreground" />
                </Button>
+              </div>
+              {/* NGO Verify Button */}
+              {user.role === 'ngo' && !user.isNgoVerified && user.ngoVerificationStatus !== 'pending' && user.ngoVerificationStatus !== 'under_review' && (
+                <button onClick={() => navigate('/ngo-verify')}
+                  className="w-full h-12 rounded-2xl border-2 border-emerald-500/40 bg-emerald-500/10 text-emerald-600 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-emerald-500/20 active:scale-95 transition-all"
+                >
+                  <ShieldCheck className="h-4 w-4" /> Apply for NGO Verification
+                </button>
+              )}
+              {user.role === 'ngo' && (user.ngoVerificationStatus === 'pending' || user.ngoVerificationStatus === 'under_review') && (
+                <div className="w-full h-12 rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-500 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                  <ShieldCheck className="h-4 w-4" /> Verification Pending
+                </div>
+              )}
+              {/* Admin Panel Button */}
+              {(user.isAdmin || user.email === 'abhijeetpanda21@gmail.com') && (
+                <button onClick={() => navigate('/admin')}
+                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 hover:shadow-violet-600/40 active:scale-95 transition-all"
+                >
+                  🛡️ Admin Panel
+                </button>
+              )}
             </div>
          </div>
 

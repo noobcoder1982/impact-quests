@@ -159,8 +159,8 @@ export default function DashboardPage() {
       }
 
       try {
-        const API_KEY = '[REDACTED]';
         let lat = 51.5074, lon = -0.1278; // Default: London Hub
+        let city = 'London Hub';
         
         // Wrap Geolocation in a faster promise
         const getPosition = () => new Promise<GeolocationPosition>((res, rej) => {
@@ -176,24 +176,39 @@ export default function DashboardPage() {
           console.warn("Location denied or timed out, using fallback hub.");
         }
 
-        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
-        
-        if (res.status === 401) {
-          console.error("Weather API key not yet active. Falling back to default data.");
-          setWeather({ temp: 10, status: 'Clear', city: 'Mission Hub', aqi: 75 });
-          return;
+        // 1. Fetch Location Name dynamically (Keyless & Free)
+        try {
+          const geoRes = await fetch(`https://api.bigdatacloud.com/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+          const geoData = await geoRes.json();
+          city = geoData.city || geoData.locality || geoData.principalSubdivision || 'Mission Hub';
+        } catch (geoNameErr) {
+          city = 'Mission Hub';
         }
 
-        const data = await res.json();
-        if (data.main) {
-          const weatherData = {
-            temp: Math.round(data.main.temp),
-            status: data.weather[0].main,
-            city: data.name,
+        // 2. Fetch Weather from Open-Meteo (Keyless & Free)
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`);
+        const weatherData = await weatherRes.json();
+
+        if (weatherData && weatherData.current) {
+          const temp = Math.round(weatherData.current.temperature_2m);
+          const code = weatherData.current.weather_code;
+          
+          let status = 'Clear';
+          if (code >= 1 && code <= 3) status = 'Clouds';
+          else if (code >= 45 && code <= 48) status = 'Fog';
+          else if ((code >= 51 && code <= 65) || (code >= 80 && code <= 82)) status = 'Rain';
+          else if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) status = 'Snow';
+          else if (code >= 95) status = 'Thunderstorm';
+
+          const finalWeather = {
+            temp,
+            status,
+            city,
             aqi: 75
           };
-          setWeather(weatherData);
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ data: weatherData, timestamp: Date.now() }));
+          
+          setWeather(finalWeather);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ data: finalWeather, timestamp: Date.now() }));
         }
       } catch (err) {
         console.error("Tactical weather failed:", err);

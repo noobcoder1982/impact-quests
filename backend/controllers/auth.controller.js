@@ -242,13 +242,22 @@ const firebaseLogin = async (req, res, next) => {
         await user.save();
       } else {
         // Create new user
+        const SUPER_ADMIN_EMAIL = 'abhijeetpanda21@gmail.com';
         user = await User.create({
           name: decodedToken.name || decodedToken.email.split('@')[0],
           email: decodedToken.email,
           firebaseUid: decodedToken.uid,
           role: role,
+          isAdmin: decodedToken.email === SUPER_ADMIN_EMAIL,
         });
       }
+    }
+
+    // Ensure super admin always has admin flag
+    const SUPER_ADMIN_EMAIL = 'abhijeetpanda21@gmail.com';
+    if (user.email === SUPER_ADMIN_EMAIL && !user.isAdmin) {
+      user.isAdmin = true;
+      await user.save({ validateBeforeSave: false });
     }
 
     return successResponse(res, 200, 'Firebase login successful', {

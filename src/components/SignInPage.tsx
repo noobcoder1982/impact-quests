@@ -414,6 +414,60 @@ export default function SignInPage({ onLogin }: { onLogin: (user?: any) => void 
                   {isLogin ? 'Register' : 'Log In'}
                 </button>
               </p>
+
+              {/* Localhost Testing Buttons */}
+              {!(import.meta.env.PROD || window.location.search.includes('prod-preview')) && (
+                <div className="space-y-2.5 pt-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-px bg-border" />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-amber-500/60">Dev Testing</span>
+                    <div className="flex-1 h-px bg-border" />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const mockNgo = {
+                        _id: 'ngo-test-123',
+                        name: 'Test NGO Admin',
+                        email: 'testngo@impactquest.org',
+                        role: 'ngo',
+                        organizationName: 'Test Relief Foundation',
+                        isOnboarded: true,
+                        isNgoVerified: false,
+                        ngoVerificationStatus: 'none',
+                      };
+                      localStorage.setItem('user', JSON.stringify(mockNgo));
+                      localStorage.setItem('accessToken', 'guest-token-ngo');
+                      onLogin(mockNgo);
+                    }}
+                    className="w-full h-12 rounded-2xl border-2 border-dashed border-amber-500/30 bg-amber-500/5 text-amber-600 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2.5 hover:bg-amber-500/10 active:scale-95 transition-all"
+                  >
+                    🏢 Login as NGO [Testing]
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const mockAdmin = {
+                        _id: 'admin-test-123',
+                        name: 'Admin User',
+                        email: 'abhijeetpanda21@gmail.com',
+                        role: 'volunteer',
+                        isOnboarded: true,
+                        isAdmin: true,
+                        nickname: 'Admin',
+                        selectedSkills: ['Leadership'],
+                        skills: ['Leadership'],
+                      };
+                      localStorage.setItem('user', JSON.stringify(mockAdmin));
+                      localStorage.setItem('accessToken', 'guest-token-admin');
+                      onLogin(mockAdmin);
+                    }}
+                    className="w-full h-12 rounded-2xl border-2 border-dashed border-violet-500/30 bg-violet-500/5 text-violet-600 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2.5 hover:bg-violet-500/10 active:scale-95 transition-all"
+                  >
+                    🛡️ Login as Admin [Testing]
+                  </button>
+                </div>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
