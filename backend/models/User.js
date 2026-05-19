@@ -261,6 +261,19 @@ const userSchema = new mongoose.Schema(
       enum: ['none', 'pending', 'approved', 'rejected'],
       default: 'none',
     },
+    isSuspended: {
+      type: Boolean,
+      default: false,
+    },
+    suspensionReason: {
+      type: String,
+      default: '',
+    },
+    suspendedAt: Date,
+    suspendedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
 
     // ── Refresh Token ─────────────────────────
     refreshToken: {

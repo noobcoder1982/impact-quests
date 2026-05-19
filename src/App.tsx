@@ -69,6 +69,8 @@ const FlashIconNav = Zap;
 import { cn } from "@/lib/utils"
 
 function AppLayout({ children, onLogout }: { children: React.ReactNode, onLogout: () => void }) {
+  const location = useLocation();
+  
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden relative">
       {/* Desktop sidebar — hidden on mobile */}
@@ -76,7 +78,7 @@ function AppLayout({ children, onLogout }: { children: React.ReactNode, onLogout
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
         <AnimatePresence mode="wait">
           <motion.div
-            key={useLocation().pathname}
+            key={location.pathname}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}

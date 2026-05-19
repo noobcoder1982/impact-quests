@@ -43,6 +43,21 @@ export default function TacticalDashboardIntel() {
 
   if (loading || !readiness) return null
 
+  const safeFocusSector = typeof directive?.focusSector === 'string' ? directive.focusSector : 'Sector Delta';
+  const safeDirectiveText = typeof directive?.directive === 'string' ? directive.directive : 'Focus deployments on Sector Delta. Medical resource utilization is peak.';
+
+  // Extract the portion of the directive after the focus sector name
+  let remainingText = safeDirectiveText;
+  if (safeFocusSector && safeDirectiveText.includes(safeFocusSector)) {
+    const parts = safeDirectiveText.split(safeFocusSector);
+    if (parts.length > 1) {
+      remainingText = parts.slice(1).join(safeFocusSector).trim();
+      if (remainingText.startsWith('.')) {
+        remainingText = remainingText.substring(1).trim();
+      }
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
       {/* --- READINESS GAUGE --- */}
@@ -108,7 +123,7 @@ export default function TacticalDashboardIntel() {
         <div>
           <h4 className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Neural Directive</h4>
           <p className="text-sm font-bold leading-tight mt-1">
-            Focus deployments on <span className="text-indigo-400">{directive.focusSector}</span>. {directive.directive.split(directive.focusSector)[1] || directive.directive}
+            Focus deployments on <span className="text-indigo-400">{safeFocusSector}</span>. {remainingText || 'Medical resource utilization is peak.'}
           </p>
         </div>
       </motion.div>

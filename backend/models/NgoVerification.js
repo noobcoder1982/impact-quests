@@ -73,6 +73,14 @@ const ngoVerificationSchema = new mongoose.Schema(
     reviewedAt: {
       type: Date,
     },
+    // AI Analysis Results
+    aiAnalysis: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+    aiAnalyzedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
