@@ -104,9 +104,9 @@ export default function Home() {
 
         {/* Main Strategic Heading */}
         <div className="max-w-[1400px] space-y-8 md:space-y-12 mb-12 md:mb-16 px-0">
-            <h1 className="text-[14vw] sm:text-[12vw] lg:text-[8.5rem] font-black text-foreground leading-[0.9] md:leading-[0.8] tracking-tighter lowercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-               <BlurText text="strategic" /> <br />
-               <BlurText text="resilience." className="outline-text" delay={0.4} />
+            <h1 className="text-[10vw] lg:text-[7.5rem] font-black text-foreground leading-[1] tracking-tighter lowercase flex flex-col md:flex-row gap-x-6 items-center justify-center" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+               <BlurText text="strategic" />
+               <BlurText text="resilience" className="outline-text" delay={0.4} />
             </h1>
            
            <motion.p 
