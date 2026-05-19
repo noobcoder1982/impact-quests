@@ -94,54 +94,74 @@ export default function Home() {
         
         {/* Release Protocol Pill */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="inline-flex items-center gap-3 px-5 md:px-6 py-2 rounded-full bg-indigo-600/5 border border-indigo-600/10 shadow-sm mb-10 md:mb-12 group cursor-pointer hover:bg-indigo-600/10 transition-all font-sans"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-zinc-900/60 border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.15)] mb-10 md:mb-12 cursor-pointer hover:border-indigo-500/40 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all font-mono"
         >
-          <div className="h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 leading-none">Protocol Release v4.0.1</span>
+          <div className="h-2 w-2 rounded-full bg-indigo-500 animate-ping" />
+          <span className="text-[10px] font-black uppercase tracking-[0.25em] text-indigo-400">PROTOCOL RELEASE V4.0.1</span>
         </motion.div>
 
         {/* Main Strategic Heading */}
-        <div className="max-w-[1400px] space-y-8 md:space-y-12 mb-12 md:mb-16 px-0">
-            <h1 className="text-[10vw] lg:text-[7.5rem] font-black text-foreground leading-[1] tracking-tighter lowercase flex flex-col md:flex-row gap-x-6 items-center justify-center" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-               <BlurText text="strategic" />
-               <BlurText text="resilience" className="outline-text" delay={0.4} />
+        <div className="max-w-[1400px] space-y-8 md:space-y-12 mb-12 md:mb-16 px-0 text-center">
+            <h1 className="text-[13vw] sm:text-[10vw] lg:text-[8rem] font-black leading-[0.95] tracking-tighter lowercase flex flex-col items-center justify-center font-sans">
+               <span className="text-foreground drop-shadow-[0_2px_10px_rgba(255,255,255,0.05)]">
+                  <BlurText text="strategic" />
+               </span>
+               <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-indigo-400 to-indigo-600 drop-shadow-[0_4px_30px_rgba(99,102,241,0.25)] select-none font-serif tracking-normal mt-2 pb-2" style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}>
+                  <BlurText text="resilience." delay={0.3} />
+               </span>
             </h1>
            
-           <motion.p 
-             initial={{ filter: "blur(10px)", opacity: 0, y: 20 }}
-             whileInView={{ filter: "blur(0px)", opacity: 1, y: 0 }}
-             viewport={{ once: true }}
-             transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-             className="max-w-2xl mx-auto text-base md:text-2xl text-muted-foreground font-medium leading-relaxed tracking-tight italic px-4"
-           >
-             The tactical layer for modern volunteering. A high-fidelity mission control system designed for complex community recovery.
-           </motion.p>
+           <div className="max-w-2xl mx-auto mt-8 relative px-4">
+             <motion.p 
+               initial={{ filter: "blur(10px)", opacity: 0, y: 15 }}
+               whileInView={{ filter: "blur(0px)", opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: 0.4, duration: 0.8 }}
+               className="text-base md:text-xl text-muted-foreground font-mono leading-relaxed tracking-tight"
+             >
+               <span className="text-indigo-500/80 mr-2 font-bold">&gt;</span>
+               The tactical layer for modern volunteering. A high-fidelity mission control system designed for complex community recovery.
+               <motion.span 
+                 animate={{ opacity: [1, 0, 1] }} 
+                 transition={{ repeat: Infinity, duration: 1 }}
+                 className="inline-block w-2.5 h-4 bg-indigo-500 ml-1.5 align-middle"
+               />
+             </motion.p>
+           </div>
         </div>
 
         {/* Action Protocols */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-8 mb-20 md:mb-24 relative z-20"
+          transition={{ delay: 0.5 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-10 mb-20 md:mb-24 relative z-20"
         >
-          <Link to="/signin" className="w-full sm:w-auto">
-            <Button className="w-full sm:w-auto h-16 md:h-20 px-10 md:px-12 rounded-2xl md:rounded-[2.5rem] bg-indigo-600 text-white text-lg md:text-xl font-black gap-4 hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-600/20 active:scale-95 leading-none">
-                Deploy <ArrowRight className="h-5 w-5" />
+          <Link to="/signin" className="w-full sm:w-auto relative group">
+            {/* Ambient button glow */}
+            <div className="absolute inset-0 bg-indigo-600/30 rounded-2xl md:rounded-[2.5rem] blur-xl opacity-75 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
+            <Button className="relative w-full sm:w-auto h-16 md:h-20 px-10 md:px-12 rounded-2xl md:rounded-[2.5rem] bg-indigo-600 text-white text-lg md:text-xl font-black gap-4 hover:bg-indigo-700 transition-all border border-indigo-500/20 active:scale-95 leading-none">
+                Deploy <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
+          
           <button 
             onClick={() => setIsVideoPlaying(true)}
             className="flex items-center gap-4 group cursor-pointer"
           >
-             <div className="h-16 w-16 md:h-20 md:w-20 rounded-full border border-white/10 flex items-center justify-center shadow-lg group-hover:scale-110 active:scale-90 transition-all bg-white/5 backdrop-blur-xl">
-                <Play className="h-5 w-5 md:h-6 md:w-6 text-white fill-current ml-1" />
+             <div className="relative h-16 w-16 md:h-20 md:w-20 rounded-full flex items-center justify-center bg-zinc-950 border border-white/10 shadow-xl overflow-visible transition-all">
+                {/* Concentric pulsing sweeps */}
+                <div className="absolute inset-0 rounded-full border border-indigo-500/30 animate-ping opacity-60 scale-105" />
+                <div className="absolute inset-0 rounded-full border border-purple-500/20 animate-ping opacity-30 scale-125 [animation-delay:0.5s]" />
+                <div className="absolute inset-0 rounded-full bg-indigo-600/5 group-hover:bg-indigo-600/10 transition-all" />
+                
+                <Play className="h-5 w-5 md:h-6 md:w-6 text-white fill-current ml-1 z-10 group-hover:scale-110 transition-transform" />
              </div>
-             <div className="text-left">
-                <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-foreground/30 leading-none mb-1">Briefing</div>
-                <div className="text-sm font-bold text-foreground uppercase tracking-widest leading-none">Watch Tape</div>
+             <div className="text-left font-mono">
+                <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-indigo-400/50 leading-none mb-1">[ BRIEFING ]</div>
+                <div className="text-sm font-black text-foreground uppercase tracking-widest leading-none group-hover:text-indigo-400 transition-colors">WATCH TAPE</div>
              </div>
           </button>
         </motion.div>
