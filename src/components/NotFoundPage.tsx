@@ -1,6 +1,7 @@
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowLeft01Icon as ArrowLeft, RotateRightIcon as Rotate, SparklesIcon as Sparkles, TrophyIcon as Trophy, VolumeHighIcon as SoundOn, VolumeMuteIcon as SoundOff } from "hugeicons-react"
+import { ArrowLeft01Icon as ArrowLeft, SparklesIcon as Sparkles, Award01Icon as Trophy } from "hugeicons-react"
+import { RotateCw as Rotate } from "lucide-react"
 import { Button } from "./ui/button"
 
 export default function NotFoundPage() {
@@ -416,7 +417,7 @@ export default function NotFoundPage() {
                 onClick={() => setMuted(!muted)} 
                 className="h-8 w-8 rounded-lg bg-zinc-800/80 flex items-center justify-center hover:bg-zinc-700/80 text-muted-foreground transition-all"
               >
-                {muted ? <SoundOff className="h-4.5 w-4.5" /> : <SoundOn className="h-4.5 w-4.5" />}
+                {muted ? "🔇" : "🔊"}
               </button>
             </div>
           </div>
