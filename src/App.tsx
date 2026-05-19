@@ -35,6 +35,7 @@ import ChangelogPage from "./components/ChangelogPage"
 import EnergyDashboardPage from "./components/EnergyDashboardPage"
 import AdminPanel from "./components/AdminPanel"
 import NgoVerificationPage from "./components/NgoVerificationPage"
+import NotFoundPage from "./components/NotFoundPage"
 import { AnimatedThemeToggler } from "./components/ui/animated-theme-toggler"
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext"
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext"
@@ -659,6 +660,10 @@ function App({ isAuthenticated, handleLogin, handleLogout }: { isAuthenticated: 
           <Route
             path="/ngo-verify"
             element={isAuthenticated ? <AppLayout onLogout={handleLogout}><NgoVerificationPage /></AppLayout> : <Navigate to="/signin" />}
+          />
+          <Route
+            path="*"
+            element={<NotFoundPage />}
           />
         </Routes>
       </main>
