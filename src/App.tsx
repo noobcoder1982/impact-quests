@@ -390,7 +390,7 @@ function Navbar({ isAuthenticated, onLogout }: { isAuthenticated: boolean, onLog
   const { theme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
-  const isAppPage = location.pathname !== "/" && location.pathname !== "/about" && location.pathname !== "/contact" && location.pathname !== "/signin" && location.pathname !== "/features" && location.pathname !== "/resources" && location.pathname !== "/pricing" && location.pathname !== "/admin" && location.pathname !== "/ngo-verify";
+  const isAppPage = location.pathname !== "/" && location.pathname !== "/about" && location.pathname !== "/contact" && location.pathname !== "/signin" && location.pathname !== "/features" && location.pathname !== "/resources" && location.pathname !== "/pricing";
 
   if (isAppPage) return null;
 
