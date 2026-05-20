@@ -69,14 +69,14 @@ export default function AboutPage() {
           <motion.div {...fadeUp} className="space-y-6">
             {/* Monospace Badge */}
             <div className="inline-flex items-center gap-2 border-2 border-foreground bg-secondary px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider">
-              <Sparkles className="h-3.5 w-3.5" style={{ color: 'hsl(var(--p))' }} />
+              <Sparkles className="h-3.5 w-3.5" style={{ color: 'hsl(var(--primary, 243 75% 58%))' }} />
               <span>SYSTEM_MANIFESTO: v4.0</span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               WE'RE BUILDING THE<br />
               <span className="italic font-serif font-light text-muted-foreground" style={{ fontFamily: "'Instrument Serif', serif" }}>infrastructure for</span>{' '}
-              <span style={{ color: 'hsl(var(--p))' }}>GOOD.</span>
+              <span style={{ color: 'hsl(var(--primary, 243 75% 58%))' }}>GOOD.</span>
             </h1>
 
             <p className="text-base md:text-lg text-muted-foreground font-mono leading-relaxed max-w-2xl border-l-4 border-foreground pl-4">
@@ -105,14 +105,14 @@ export default function AboutPage() {
         </section>
 
         {/* OUR STORY SECTION */}
-        <section className="border-4 border-foreground bg-card" style={{ boxShadow: '6px 6px 0px hsl(var(--p))' }}>
+        <section className="border-4 border-foreground bg-card" style={{ boxShadow: '6px 6px 0px hsl(var(--primary, 243 75% 58%))' }}>
           <motion.div {...fadeUp} className="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y-4 md:divide-y-0 md:divide-x-4 divide-foreground">
             {/* Title Cell */}
             <div className="p-8 md:p-10 flex flex-col justify-between space-y-8 bg-secondary/20">
               <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-muted-foreground">[ 01_ORIGINS ]</span>
               <h2 className="text-3xl md:text-5xl font-black tracking-tight text-foreground leading-none" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 BORN FROM<br />FRUSTRATION.<br />
-                <span className="italic font-serif font-light" style={{ fontFamily: "'Instrument Serif', serif", color: 'hsl(var(--p))' }}>Built with purpose.</span>
+                <span className="italic font-serif font-light" style={{ fontFamily: "'Instrument Serif', serif", color: 'hsl(var(--primary, 243 75% 58%))' }}>Built with purpose.</span>
               </h2>
             </div>
             
@@ -149,7 +149,7 @@ export default function AboutPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
                 className="p-6 border-4 border-foreground bg-card hover:bg-secondary/20 transition-all duration-200"
-                style={{ boxShadow: '5px 5px 0px hsl(var(--p))' }}
+                style={{ boxShadow: '5px 5px 0px hsl(var(--primary, 243 75% 58%))' }}
               >
                 {/* Raw Icon Frame */}
                 <div className="h-12 w-12 border-2 border-foreground bg-secondary flex items-center justify-center mb-6">
@@ -164,7 +164,7 @@ export default function AboutPage() {
         </section>
 
         {/* CTA SECTION */}
-        <section className="border-4 border-foreground bg-zinc-950 text-white p-8 md:p-12 relative overflow-hidden" style={{ boxShadow: '8px 8px 0px hsl(var(--p))' }}>
+        <section className="border-4 border-foreground bg-zinc-950 text-white p-8 md:p-12 relative overflow-hidden" style={{ boxShadow: '8px 8px 0px hsl(var(--primary, 243 75% 58%))' }}>
           {/* Blueprint background grid pattern specific to card for extreme premium look */}
           <div 
             className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -192,12 +192,12 @@ export default function AboutPage() {
             
             <Link to="/signin" className="w-full md:w-auto shrink-0">
               <button 
-                className="w-full md:w-auto px-8 py-4 border-2 border-white bg-white text-zinc-950 font-mono font-bold text-base flex items-center justify-center gap-3 transition-all hover:bg-zinc-100 active:scale-95"
+                className="w-full md:w-auto px-8 py-4 border-2 border-foreground bg-foreground text-background font-mono font-bold text-base flex items-center justify-center gap-3 transition-all hover:opacity-90 active:scale-95"
                 style={{ 
-                  boxShadow: '4px 4px 0px hsl(var(--p))'
+                  boxShadow: '4px 4px 0px hsl(var(--primary, 243 75% 58%))'
                 }}
               >
-                GET STARTED <ArrowRight className="h-5 w-5 text-zinc-950" />
+                GET STARTED <ArrowRight className="h-5 w-5 text-background" />
               </button>
             </Link>
           </motion.div>

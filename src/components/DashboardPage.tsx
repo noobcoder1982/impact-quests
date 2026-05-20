@@ -1453,8 +1453,6 @@ export default function DashboardPage() {
     return (
       <motion.div
         key={widget.id}
-        layoutId={`widget-${widget.id}`}
-        layout
         className={cn(
           "rounded-[2.2rem] p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-between select-none",
           "bg-card/45 backdrop-blur-md border border-border/40 shadow-[0_15px_30px_rgba(0,0,0,0.03)] dark:shadow-[0_15px_30px_rgba(0,0,0,0.15)] hover:shadow-[0_30px_60px_rgba(99,102,241,0.08)] hover:border-indigo-500/35 hover:-translate-y-1",

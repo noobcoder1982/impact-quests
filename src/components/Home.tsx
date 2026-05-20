@@ -66,78 +66,6 @@ const BlurText = ({ text, className, delay = 0 }: { text: string, className?: st
   );
 };
 
-function CustomCursor() {
-  const [position, setPosition] = React.useState({ x: 0, y: 0 })
-  const [hidden, setHidden] = React.useState(true)
-  const [hovered, setHovered] = React.useState(false)
-
-  React.useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY })
-      if (hidden) setHidden(false)
-    }
-
-    const handleMouseLeave = () => setHidden(true)
-    const handleMouseEnter = () => setHidden(false)
-
-    window.addEventListener("mousemove", handleMouseMove)
-    document.addEventListener("mouseleave", handleMouseLeave)
-    document.addEventListener("mouseenter", handleMouseEnter)
-
-    const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (
-        target.tagName === 'A' ||
-        target.tagName === 'BUTTON' ||
-        target.closest('a') ||
-        target.closest('button') ||
-        target.style.cursor === 'pointer' ||
-        target.classList.contains('cursor-pointer') ||
-        target.closest('.cursor-pointer')
-      ) {
-        setHovered(true)
-      } else {
-        setHovered(false)
-      }
-    }
-
-    window.addEventListener("mouseover", handleMouseOver)
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove)
-      document.removeEventListener("mouseleave", handleMouseLeave)
-      document.removeEventListener("mouseenter", handleMouseEnter)
-      window.removeEventListener("mouseover", handleMouseOver)
-    }
-  }, [hidden])
-
-  if (hidden) return null
-
-  return (
-    <>
-      <style>{`
-        .custom-cursor-active, .custom-cursor-active * {
-          cursor: none !important;
-        }
-      `}</style>
-      <div
-        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-indigo-500 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 transition-transform duration-150 ease-out"
-        style={{
-          transform: `translate3d(${position.x}px, ${position.y}px, 0) scale(${hovered ? 1.6 : 1})`,
-          backgroundColor: hovered ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
-          boxShadow: hovered ? '0 0 12px rgba(99, 102, 241, 0.2)' : 'none',
-        }}
-      />
-      <div
-        className="fixed top-0 left-0 w-2.5 h-2.5 rounded-full bg-indigo-600 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 transition-transform duration-75 ease-out"
-        style={{
-          transform: `translate3d(${position.x}px, ${position.y}px, 0) scale(${hovered ? 0.4 : 1})`,
-        }}
-      />
-    </>
-  )
-}
-
 export default function Home() {
   const containerRef = React.useRef(null)
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
@@ -153,8 +81,7 @@ export default function Home() {
   }, [isVideoPlaying])
   
   return (
-    <div ref={containerRef} className="min-h-screen bg-background font-sans selection:bg-indigo-600/10 transition-colors duration-500 overflow-x-hidden custom-cursor-active">
-      <CustomCursor />
+    <div ref={containerRef} className="min-h-screen bg-background font-sans selection:bg-indigo-600/10 transition-colors duration-500 overflow-x-hidden">
       
       {/* Dynamic Tactical Background */}
       <div className="fixed inset-0 pointer-events-none z-0">

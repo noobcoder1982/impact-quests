@@ -207,7 +207,6 @@ export default function PlannerPage() {
               <div className="space-y-4 min-h-[500px] p-2 rounded-[2rem] bg-secondary/10 border border-dashed border-border/60">
                  {filteredTasks.filter(t => t.status === status).map(task => (
                    <motion.div 
-                     layoutId={task._id}
                      key={task._id} 
                      onClick={() => setSelectedTask(task)}
                      className="p-6 rounded-3xl bg-card border border-border/60 shadow-xl shadow-black/5 hover:border-emerald-500/40 hover:-translate-y-1 transition-all cursor-pointer group"

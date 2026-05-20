@@ -272,18 +272,14 @@ export default function ImpactScorePage() {
               className={`pb-3 relative transition-colors cursor-pointer ${activeTab === 'personal' ? 'text-white font-bold' : 'text-zinc-650 hover:text-zinc-400'}`}
             >
               [ 01 // Biometric Dossier ]
-              {activeTab === 'personal' && (
-                <motion.div layoutId="impact-tab-bar" className="absolute bottom-0 inset-x-0 h-[2px] bg-indigo-500" />
-              )}
+              <div className={`absolute bottom-0 inset-x-0 h-[2px] bg-indigo-500 transition-all duration-300 ${activeTab === 'personal' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`} />
             </button>
             <button
               onClick={() => setActiveTab('leaderboard')}
               className={`pb-3 relative transition-colors cursor-pointer ${activeTab === 'leaderboard' ? 'text-white font-bold' : 'text-zinc-650 hover:text-zinc-400'}`}
             >
               [ 02 // Global Leaderboard ]
-              {activeTab === 'leaderboard' && (
-                <motion.div layoutId="impact-tab-bar" className="absolute bottom-0 inset-x-0 h-[2px] bg-indigo-500" />
-              )}
+              <div className={`absolute bottom-0 inset-x-0 h-[2px] bg-indigo-500 transition-all duration-300 ${activeTab === 'leaderboard' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`} />
             </button>
           </div>
         </div>

@@ -143,15 +143,24 @@ const EnergyDashboardPage: React.FC = () => {
       };
       setEnergyData(demoEnergy);
       
-      const demoHistory = [
-        { date: "Mon", energy: 85, focus: 88, workload: 40 },
-        { date: "Tue", energy: 72, focus: 75, workload: 65 },
-        { date: "Wed", energy: 90, focus: 82, workload: 30 },
-        { date: "Thu", energy: 60, focus: 70, workload: 80 },
-        { date: "Fri", energy: 75, focus: 80, workload: 50 },
-        { date: "Sat", energy: 88, focus: 92, workload: 20 },
-        { date: "Sun", energy: 95, focus: 90, workload: 10 },
-      ];
+      const demoHistory = {
+        history: [
+          { value: 90, timestamp: new Date(Date.now() - 3600000 * 6).toISOString(), reason: "Power Nap" },
+          { value: 82, timestamp: new Date(Date.now() - 3600000 * 12).toISOString(), reason: "Hydration Intake" },
+          { value: 50, timestamp: new Date(Date.now() - 3600000 * 18).toISOString(), reason: "High Urgency Task" },
+          { value: 65, timestamp: new Date(Date.now() - 3600000 * 24).toISOString(), reason: "Completed Assignment" },
+          { value: 70, timestamp: new Date(Date.now() - 3600000 * 30).toISOString(), reason: "Brief Rest Block" }
+        ],
+        statistics: {
+          average: 74,
+          minimum: 50,
+          maximum: 90,
+          current: 78,
+          trend: 'stable'
+        },
+        burnoutScore: 34,
+        focusScore: 82
+      };
       setHistoryData(demoHistory);
     } finally {
       setLoading(false);

@@ -86,7 +86,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           animate={{ x: 0, y: 0, opacity: 1, rotate: 6 }}
           transition={{ delay: 0.2, type: "spring" }}
           className="absolute -top-6 -right-6 z-20 border-2 border-white px-3 py-1 text-[10px] font-mono font-bold text-white shadow-[2px_2px_0px_#000]"
-          style={{ backgroundColor: 'hsl(var(--p))' }}
+          style={{ backgroundColor: 'hsl(var(--primary, 243 75% 58%))' }}
         >
           IQ_SYS.v4.0
         </motion.div>
@@ -97,7 +97,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 150, damping: 18 }}
           className="w-full bg-zinc-900 border-4 border-white p-8 flex flex-col space-y-6 relative"
-          style={{ boxShadow: '8px 8px 0px hsl(var(--p))' }}
+          style={{ boxShadow: '8px 8px 0px hsl(var(--primary, 243 75% 58%))' }}
         >
           {/* Header Row */}
           <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-400">
@@ -116,9 +116,9 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             <h1 className="text-6xl font-black tracking-tighter leading-none" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               IMPACT
             </h1>
-            <h2 className="text-5xl font-serif italic leading-none pl-1 flex items-center gap-2" style={{ fontFamily: "'Instrument Serif', serif", color: 'hsl(var(--p))' }}>
+            <h2 className="text-5xl font-serif italic leading-none pl-1 flex items-center gap-2" style={{ fontFamily: "'Instrument Serif', serif", color: 'hsl(var(--primary, 243 75% 58%))' }}>
               Quest.
-              <span className="inline-block w-4 h-4 border border-white" style={{ backgroundColor: 'hsl(var(--p))' }} />
+              <span className="inline-block w-4 h-4 border border-white" style={{ backgroundColor: 'hsl(var(--primary, 243 75% 58%))' }} />
             </h2>
           </div>
 
@@ -126,7 +126,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           <div className="space-y-2">
             <div className="flex justify-between text-[11px] font-mono text-zinc-400">
               <span>LOADING PROGRESS</span>
-              <span className="font-bold font-mono text-lg" style={{ color: 'hsl(var(--p))' }}>{Math.round(progress)}%</span>
+              <span className="font-bold font-mono text-lg" style={{ color: 'hsl(var(--primary, 243 75% 58%))' }}>{Math.round(progress)}%</span>
             </div>
             
             {/* Chunky Brutalist Bar */}
@@ -141,7 +141,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
                     transition={{ delay: index * 0.03 }}
                     className="flex-1 h-full transition-colors duration-150 rounded-none"
                     style={{ 
-                      backgroundColor: isFilled ? 'hsl(var(--p))' : 'transparent',
+                      backgroundColor: isFilled ? 'hsl(var(--primary, 243 75% 58%))' : 'transparent',
                       border: isFilled ? '1px solid rgba(255,255,255,0.2)' : 'none',
                       opacity: isFilled ? 1 : 0.1,
                       backgroundImage: isFilled ? 'linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent)' : 'none',
@@ -159,7 +159,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           {/* Footer Telemetry Row */}
           <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400">
             <div className="flex items-center gap-1.5 overflow-hidden">
-              <span className="font-bold animate-pulse" style={{ color: 'hsl(var(--p))' }}>&gt;</span>
+              <span className="font-bold animate-pulse" style={{ color: 'hsl(var(--primary, 243 75% 58%))' }}>&gt;</span>
               <span className="truncate max-w-[280px]">{telemetryText}</span>
             </div>
             <span className="text-[8px] bg-white/10 px-2 py-0.5 font-bold uppercase tracking-widest text-zinc-300">
@@ -189,13 +189,13 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 160, damping: 16 }}
           className="w-full aspect-square bg-zinc-900 border-4 border-white p-6 flex flex-col justify-between relative"
-          style={{ boxShadow: '6px 6px 0px hsl(var(--p))' }}
+          style={{ boxShadow: '6px 6px 0px hsl(var(--primary, 243 75% 58%))' }}
         >
           {/* Top Info Slot */}
           <div className="flex justify-between items-center text-[8px] font-mono text-zinc-400">
             <span>[ SYSTEM: IQ-MOBILE ]</span>
             <div className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-none animate-pulse" style={{ backgroundColor: 'hsl(var(--p))' }} />
+              <span className="w-1.5 h-1.5 rounded-none animate-pulse" style={{ backgroundColor: 'hsl(var(--primary, 243 75% 58%))' }} />
               <span>ACTIVE</span>
             </div>
           </div>
@@ -206,7 +206,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
               IMPACT
             </h2>
             <div className="h-[2px] w-12 bg-white/40 my-1" />
-            <h3 className="text-4xl font-serif italic leading-none" style={{ fontFamily: "'Instrument Serif', serif", color: 'hsl(var(--p))' }}>
+            <h3 className="text-4xl font-serif italic leading-none" style={{ fontFamily: "'Instrument Serif', serif", color: 'hsl(var(--primary, 243 75% 58%))' }}>
               Quest.
             </h3>
           </div>
@@ -217,7 +217,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             <div className="flex justify-between items-end">
               <span className="text-[8px] font-mono text-zinc-500 leading-none">PROGRESS MODULE</span>
               <span className="text-2xl font-mono font-black text-white leading-none">
-                {Math.round(progress)}<span className="text-[12px] ml-0.5" style={{ color: 'hsl(var(--p))' }}>%</span>
+                {Math.round(progress)}<span className="text-[12px] ml-0.5" style={{ color: 'hsl(var(--primary, 243 75% 58%))' }}>%</span>
               </span>
             </div>
 
@@ -227,7 +227,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
                 className="h-full" 
                 style={{ 
                   width: `${progress}%`,
-                  backgroundColor: 'hsl(var(--p))'
+                  backgroundColor: 'hsl(var(--primary, 243 75% 58%))'
                 }}
                 transition={{ duration: 0.1 }}
               />
