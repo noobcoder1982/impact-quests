@@ -158,161 +158,264 @@ export default function ProfilePage() {
     {/* ════════════════════════════════════════════════════════════════════════
         MOBILE PROFILE  (md:hidden)
     ════════════════════════════════════════════════════════════════════════ */}
-    <div className="md:hidden flex flex-col overflow-y-auto scrollbar-hide pb-40 bg-background text-foreground">
+    <div className="md:hidden flex flex-col overflow-y-auto scrollbar-hide pb-40 bg-zinc-950 text-white relative">
+      {/* Blueprint Grid Background */}
+      <div 
+        className="absolute inset-0 opacity-[0.02] pointer-events-none z-0"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 1px, transparent 1px)
+          `,
+          backgroundSize: '2.5rem 2.5rem',
+        }}
+      />
 
       {/* ── Hero banner ── */}
-      <div className="relative h-52 w-full overflow-hidden">
+      <div className="relative h-44 w-full overflow-hidden border-b border-zinc-900 z-10">
         {bannerImage
-          ? <img src={bannerImage} alt="banner" className="absolute inset-0 w-full h-full object-cover" />
-          : <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900" />}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
+          ? <img src={bannerImage} alt="banner" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+          : <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 opacity-60" />}
+        
+        {/* Subtle decorative grid/crosshair or dots for Swiss design */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(39,39,42,0.5),transparent)] pointer-events-none" />
+        <div className="absolute top-4 left-4 font-mono text-[9px] uppercase tracking-widest text-zinc-500 flex items-center gap-1.5 bg-zinc-950/80 backdrop-blur px-2 py-0.5 border border-zinc-900 rounded">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-slow-pulse" />
+          SYSTEM_TERM_ACTIVE
+        </div>
+
         {/* banner upload */}
-        <label className="absolute top-4 right-4 h-9 px-4 rounded-full bg-white/10 border border-white/10 flex items-center gap-2 cursor-pointer active:scale-95 transition-all">
-          <Settings className="h-3.5 w-3.5 text-white/70" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Cover</span>
+        <label className="absolute top-4 right-4 h-7 px-3 rounded bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-800 flex items-center gap-2 cursor-pointer active:scale-95 transition-all text-zinc-400 select-none">
+          <Settings className="h-3 w-3" />
+          <span className="text-[9px] font-mono uppercase tracking-widest">Cover</span>
           <input type="file" accept="image/*" className="hidden" onChange={e => handleFileUpload(e, 'banner')} />
         </label>
       </div>
 
       {/* ── Identity ── */}
-      <div className="px-5 -mt-16 relative z-10 mb-6">
+      <div className={cn("px-5 relative z-10 mb-8", bannerImage ? "-mt-10" : "mt-6")}>
         {/* avatar */}
-        <div className="relative w-fit mb-4">
-          <div className="h-24 w-24 rounded-[1.75rem] bg-card border-4 border-background shadow-2xl overflow-hidden">
-            {pfpImage
-              ? <img src={pfpImage} alt="av" className="w-full h-full object-cover" />
-              : <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}&backgroundColor=f8faff`} alt="av" className="w-full h-full object-cover" />}
+        <div className="relative w-fit mb-5">
+          <div className="h-24 w-24 rounded-xl bg-zinc-950 border border-zinc-800 p-1 shadow-2xl overflow-hidden">
+            <div className="w-full h-full rounded-lg overflow-hidden bg-zinc-900">
+              {pfpImage
+                ? <img src={pfpImage} alt="av" className="w-full h-full object-cover" />
+                : <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}&backgroundColor=f8faff`} alt="av" className="w-full h-full object-cover" />}
+            </div>
           </div>
-          <label className="absolute -bottom-2 -right-2 h-8 w-8 rounded-xl bg-indigo-600 border-2 border-background flex items-center justify-center cursor-pointer active:scale-90 transition-all shadow-lg shadow-indigo-600/30">
-            <Plus className="h-4 w-4 text-white" />
+          <label className="absolute -bottom-1 -right-1 h-7 w-7 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center cursor-pointer active:scale-90 transition-all shadow-lg hover:bg-zinc-800 text-zinc-400">
+            <Plus className="h-3.5 w-3.5" />
             <input type="file" accept="image/*" className="hidden" onChange={e => handleFileUpload(e, 'pfp')} />
           </label>
-          <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-emerald-500 border-2 border-background flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <ShieldCheck className="h-3 w-3 text-white" />
+          <div className="absolute -top-1.5 -right-1.5 h-6 w-6 rounded-full bg-zinc-950 border border-zinc-800 flex items-center justify-center shadow-lg text-emerald-500">
+            <ShieldCheck className="h-3.5 w-3.5" />
           </div>
         </div>
 
-        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-indigo-400 mb-1">Strategic Operator</p>
-        <div className="flex items-center gap-2 mb-1">
-          <h1 className="text-3xl font-black tracking-tighter text-foreground">{user.name}</h1>
+        <p className="text-[9px] font-mono uppercase tracking-[0.3em] text-zinc-500 mb-1 flex items-center gap-1.5">
+          <span>[ OPERATIVE TYPE ]</span>
+          <span className="text-zinc-600">·</span>
+          <span className="text-indigo-400 font-bold">Strategic Volunteer</span>
+        </p>
+
+        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+          <h1 className="text-3xl font-black tracking-tighter text-white">{user.name}</h1>
           {user.isNgoVerified && (
-            <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-500 text-white text-[8px] font-black uppercase tracking-widest shrink-0">
-              <ShieldCheck className="h-2.5 w-2.5" /> NGO
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-[8px] font-mono uppercase tracking-widest shrink-0">
+              <ShieldCheck className="h-2.5 w-2.5" /> NGO_VERIFIED
             </span>
           )}
         </div>
         {user.role === 'ngo' && user.organizationName && (
-          <p className="text-xs font-medium text-muted-foreground/60 mb-1">{user.organizationName}</p>
+          <p className="text-xs font-mono text-zinc-400 mb-2">{user.organizationName}</p>
         )}
 
         <div className="flex flex-wrap gap-2 mb-5">
-          <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50 border border-border/50 text-[10px] font-black uppercase tracking-widest">
-            <Award className="h-3 w-3 text-indigo-400" /> Lvl {currentLevel}
+          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-zinc-900/50 border border-zinc-800/80 text-[9px] font-mono uppercase tracking-wider text-zinc-300">
+            <Award className="h-3 w-3 text-indigo-400" /> LVL {currentLevel}
           </span>
-          <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest">
-            <Circle className="h-2 w-2 fill-current" /> Available
+          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-emerald-950/20 border border-emerald-900/30 text-emerald-400 text-[9px] font-mono uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-slow-pulse" /> AVAILABLE
           </span>
-          <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50 border border-border/50 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-            <Calendar className="h-3 w-3" /> {new Date(user.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-zinc-900/50 border border-zinc-800/80 text-[9px] font-mono uppercase tracking-wider text-zinc-400">
+            <Calendar className="h-3.5 w-3.5" /> {new Date(user.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase()}
           </span>
         </div>
 
         {/* XP bar */}
-        <div className="space-y-1.5 mb-5">
-          <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground/40">
-            <span>XP Progress</span>
-            <span>{user.points || 0} / {currentLevel * 1000}</span>
+        <div className="space-y-1.5 mb-6 bg-zinc-900/30 p-3 rounded-lg border border-zinc-900">
+          <div className="flex justify-between text-[9px] font-mono uppercase tracking-wider text-zinc-500">
+            <span>EXPERIENCE POINT PROGRESS</span>
+            <span className="text-zinc-400">{user.points || 0} / {currentLevel * 1000} XP</span>
           </div>
-          <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+          <div className="h-2 w-full bg-zinc-950 rounded overflow-hidden border border-zinc-900">
             <motion.div
               initial={{ width: 0 }} animate={{ width: `${xpProgress}%` }}
               transition={{ duration: 1.2, ease: 'easeOut', delay: 0.2 }}
-              className="h-full bg-indigo-600 rounded-full shadow-[0_0_12px_rgba(79,70,229,0.6)]"
+              className="h-full bg-gradient-to-r from-indigo-500 to-violet-600 rounded"
             />
           </div>
         </div>
 
-        {/* Edit button */}
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsEditing(true)}
-          className="w-full h-12 rounded-2xl bg-foreground text-background text-[11px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all duration-300"
-        >
-          Edit Profile
-        </motion.button>
-
-        {/* NGO Verified Badge + Verify CTA */}
-        {user.role === 'ngo' && user.isNgoVerified && (
-          <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-            <ShieldCheck className="h-4 w-4 text-emerald-500" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Verified NGO</span>
-          </div>
-        )}
-        {user.role === 'ngo' && !user.isNgoVerified && user.ngoVerificationStatus !== 'pending' && user.ngoVerificationStatus !== 'under_review' && (
+        {/* Edit and Actions list */}
+        <div className="flex flex-col gap-2">
           <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/ngo-verify')}
-            className="w-full h-12 rounded-2xl border-2 border-emerald-500/40 bg-emerald-500/10 text-emerald-600 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all"
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setIsEditing(true)}
+            className="w-full h-11 rounded bg-zinc-100 hover:bg-white text-zinc-950 text-[10px] font-mono uppercase tracking-widest font-black active:scale-98 transition-all flex items-center justify-center gap-1.5"
           >
-            <ShieldCheck className="h-4 w-4" /> Get NGO Verified
+            EDIT CONFIGURATION
           </motion.button>
-        )}
-        {user.role === 'ngo' && (user.ngoVerificationStatus === 'pending' || user.ngoVerificationStatus === 'under_review') && (
-          <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-            <ShieldCheck className="h-4 w-4 text-amber-500" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">Verification Pending</span>
-          </div>
-        )}
 
-        {/* Admin Panel Button */}
-        {(user.isAdmin || user.email === 'abhijeetpanda21@gmail.com') && (
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/admin')}
-            className="w-full h-12 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 active:scale-95 transition-all"
-          >
-            🛡️ Admin Panel
-          </motion.button>
-        )}
+          {/* NGO Verified Badge + Verify CTA */}
+          {user.role === 'ngo' && user.isNgoVerified && (
+            <div className="flex items-center justify-center gap-2 h-11 rounded bg-emerald-950/20 border border-emerald-900/30">
+              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold">VERIFIED ORGANIZATION</span>
+            </div>
+          )}
+          {user.role === 'ngo' && !user.isNgoVerified && user.ngoVerificationStatus !== 'pending' && user.ngoVerificationStatus !== 'under_review' && (
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/ngo-verify')}
+              className="w-full h-11 rounded border border-emerald-900 bg-emerald-950/10 text-emerald-400 text-[10px] font-mono uppercase tracking-widest font-bold flex items-center justify-center gap-1.5 hover:bg-emerald-950/20 transition-all"
+            >
+              <ShieldCheck className="h-4 w-4" /> SUBMIT NGO VERIFICATION
+            </motion.button>
+          )}
+          {user.role === 'ngo' && (user.ngoVerificationStatus === 'pending' || user.ngoVerificationStatus === 'under_review') && (
+            <div className="flex items-center justify-center gap-2 h-11 rounded bg-amber-950/20 border border-amber-900/30">
+              <ShieldCheck className="h-4 w-4 text-amber-400 animate-slow-pulse" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">VERIFICATION IN REVIEW</span>
+            </div>
+          )}
+
+          {/* Admin Panel Button */}
+          {(user.isAdmin || user.email === 'abhijeetpanda21@gmail.com') && (
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/admin')}
+              className="w-full h-11 rounded border border-violet-900 bg-violet-950/20 hover:bg-violet-950/40 text-violet-400 text-[10px] font-mono uppercase tracking-widest font-bold flex items-center justify-center gap-1.5 active:scale-98 transition-all"
+            >
+              🛡️ SYSTEM CONTROL PANEL
+            </motion.button>
+          )}
+        </div>
       </div>
 
-      {/* ── Stats row ── */}
-      <div className="px-5 mb-6">
-        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 mb-3">Impact Overview</p>
+      {/* ── Stats Bento Grid ── */}
+      <div className="px-5 mb-8">
+        <p className="text-[9px] font-mono uppercase tracking-[0.3em] text-zinc-500 mb-3 flex items-center gap-2">
+          <span>[ METRICS OVERVIEW ]</span>
+          <span className="h-[1px] flex-1 bg-zinc-900" />
+        </p>
         <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: 'Tasks Done',    value: user.tasksCompleted || 24, icon: CheckCircle2 },
-            { label: 'Impact Score',  value: user.points || 1250,       icon: Zap },
-            { label: 'Active Tasks',  value: 2,                          icon: Target },
-            { label: 'Hours Served',  value: '142h',                     icon: Clock },
-          ].map((s, i) => (
-            <motion.div
-              key={s.label}
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ ...spring, delay: i * 0.07 }}
-              whileHover={{ y: -5, scale: 1.01 }}
-              className="relative p-5 rounded-[2rem] bg-card border border-border/50 shadow-xl shadow-black/5 overflow-hidden group"
-            >
-              <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
-                <s.icon className="h-12 w-12" />
+          
+          {/* Stat 1: Tasks Done (standard bento) */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ ...spring, delay: 0.05 }}
+            className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-900 flex flex-col justify-between h-28 relative group overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-2.5 opacity-5 group-hover:opacity-10 transition-opacity">
+              <CheckCircle2 className="h-10 w-10 text-zinc-400" />
+            </div>
+            <div className="flex justify-between items-start">
+              <span className="text-[9px] font-mono text-zinc-600">[ 01 ]</span>
+              <span className="text-[8px] font-mono uppercase text-zinc-500 tracking-wider">COMPLETED</span>
+            </div>
+            <div>
+              <p className="text-3xl font-black tracking-tight text-white">{user.tasksCompleted || 24}</p>
+              <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mt-0.5">Directives</p>
+            </div>
+          </motion.div>
+
+          {/* Stat 2: Active Tasks (standard bento) */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ ...spring, delay: 0.1 }}
+            className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-900 flex flex-col justify-between h-28 relative group overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-2.5 opacity-5 group-hover:opacity-10 transition-opacity">
+              <Target className="h-10 w-10 text-zinc-400" />
+            </div>
+            <div className="flex justify-between items-start">
+              <span className="text-[9px] font-mono text-zinc-600">[ 02 ]</span>
+              <span className="text-[8px] font-mono uppercase text-zinc-500 tracking-wider">ONGOING</span>
+            </div>
+            <div>
+              <p className="text-3xl font-black tracking-tight text-white">2</p>
+              <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mt-0.5">Active Directives</p>
+            </div>
+          </motion.div>
+
+          {/* Stat 3: Impact Score (PREMIUM GEMINI SHIMMERING CARD) */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ ...spring, delay: 0.15 }}
+            className="col-span-2 p-5 rounded-xl gemini-gradient-bg gemini-gradient-border border-transparent bg-zinc-950/20 flex flex-col justify-between h-36 relative overflow-hidden group"
+          >
+            <div className="absolute top-0 right-0 p-4 opacity-25">
+              <Sparkles className="h-14 w-14 text-indigo-400/30 animate-slow-pulse" />
+            </div>
+            <div className="flex justify-between items-start relative z-10">
+              <span className="text-[9px] font-mono text-indigo-400">[ IMPACT QUOTIENT ]</span>
+              <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[8px] font-mono uppercase tracking-widest">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" /> COGNITION_SYNCED
+              </span>
+            </div>
+            <div className="relative z-10 flex items-end justify-between">
+              <div>
+                <p className="text-5xl font-black tracking-tighter bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">{user.points || 1250}</p>
+                <p className="text-[9px] font-mono uppercase tracking-widest text-indigo-300/80 mt-1">Global Impact Score</p>
               </div>
-              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 mb-1">{s.label}</p>
-              <p className="text-2xl font-black tracking-tighter text-foreground">{s.value}</p>
-            </motion.div>
-          ))}
+              <div className="text-right">
+                <span className="text-[9px] font-mono text-zinc-500 block">TIER RATING</span>
+                <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-bold">Elite Operator</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Stat 4: Hours Served (standard bento) */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ ...spring, delay: 0.2 }}
+            className="col-span-2 p-5 rounded-xl bg-zinc-900/20 border border-zinc-900/80 flex flex-col justify-between h-28 relative group overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+              <Clock className="h-12 w-12 text-zinc-400" />
+            </div>
+            <div className="flex justify-between items-start">
+              <span className="text-[9px] font-mono text-zinc-600">[ 03 ]</span>
+              <span className="text-[8px] font-mono uppercase text-zinc-500 tracking-wider">OPERATION DURATION</span>
+            </div>
+            <div className="flex items-end justify-between">
+              <div>
+                <p className="text-3xl font-black tracking-tight text-white">142h</p>
+                <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mt-0.5">Cumulative Service Hours</p>
+              </div>
+              <div className="text-right">
+                <span className="text-[8px] font-mono text-zinc-600 block">RELIABILITY RATING</span>
+                <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-widest">98.4% NOMINAL</span>
+              </div>
+            </div>
+          </motion.div>
+
         </div>
       </div>
 
       {/* ── Skills ── */}
-      <div className="px-5 mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/50">Skills & Expertise</p>
+      <div className="px-5 mb-8">
+        <div className="flex items-center justify-between mb-3.5">
+          <p className="text-[9px] font-mono uppercase tracking-[0.3em] text-zinc-500 flex items-center gap-2">
+            <span>[ SKILLS & EXPERTISE ]</span>
+          </p>
           <motion.button
-            whileTap={{ scale: 0.92 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-600/10 border border-indigo-600/20 text-indigo-400 text-[9px] font-black uppercase tracking-widest active:scale-95 transition-all"
+            className="flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 text-[9px] font-mono uppercase tracking-widest hover:bg-zinc-800 active:scale-95 transition-all select-none"
           >
-            <Plus className="h-3 w-3" /> Add
+            <Plus className="h-3 w-3" /> ADD_CAPABILITY
           </motion.button>
         </div>
         <div className="space-y-2">
@@ -320,19 +423,18 @@ export default function ProfilePage() {
             {(user.skills?.length ? user.skills : ['Communication', 'Logistics', 'Digital Strategy']).map((skill: string, i: number) => (
               <motion.div
                 key={skill}
-                initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                transition={{ ...spring, delay: i * 0.06 }}
-                whileHover={{ y: -5, scale: 1.01 }}
-                className="flex items-center gap-4 p-4 rounded-[1.5rem] bg-card border border-border/50 group cursor-default"
+                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                transition={{ ...spring, delay: i * 0.05 }}
+                className="flex items-center gap-3 p-3.5 rounded-lg bg-zinc-950 border border-zinc-900 group cursor-default hover:border-zinc-800 transition-colors"
               >
-                <div className="h-10 w-10 rounded-xl bg-indigo-600/10 border border-indigo-600/20 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 shrink-0">
-                  <Zap className="h-4 w-4" />
+                <div className="h-8 w-8 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:border-zinc-700 group-hover:text-indigo-400 transition-all duration-300 shrink-0">
+                  <Zap className="h-3.5 w-3.5" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold tracking-tight truncate">{skill}</p>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-indigo-400 mt-0.5">Intermediate · Verified</p>
+                  <p className="text-xs font-mono tracking-tight font-bold text-zinc-200">{skill.toUpperCase()}</p>
+                  <p className="text-[8px] font-mono uppercase tracking-widest text-zinc-500 mt-0.5">Competency Level · Verified Operator</p>
                 </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground/20 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all shrink-0" />
+                <ChevronRight className="h-3.5 w-3.5 text-zinc-700 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all shrink-0" />
               </motion.div>
             ))}
           </AnimatePresence>
@@ -340,40 +442,50 @@ export default function ProfilePage() {
       </div>
 
       {/* ── AI Insights ── */}
-      <div className="px-5 mb-6">
-        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 mb-3">AI Insights</p>
+      <div className="px-5 mb-8">
+        <p className="text-[9px] font-mono uppercase tracking-[0.3em] text-zinc-500 mb-3 flex items-center gap-2">
+          <span>[ COGNITIVE ANALYSIS ]</span>
+        </p>
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
           transition={spring}
-          className="rounded-[2rem] bg-indigo-600/5 border border-indigo-600/20 p-5 space-y-3 relative overflow-hidden"
+          className="rounded-xl bg-indigo-950/10 border border-indigo-900/30 p-4 space-y-3 relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-            <Sparkles className="h-16 w-16 text-indigo-400" />
+          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+            <Sparkles className="h-12 w-12 text-indigo-400" />
           </div>
+
+          <div className="flex items-center gap-2 pb-1.5 border-b border-indigo-900/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-slow-pulse" />
+            <span className="text-[9px] font-mono uppercase tracking-widest text-indigo-400 font-bold">COGNITION ENGINE LOGS</span>
+          </div>
+
           {[
-            { title: 'Recommended Mission', body: 'Based on your Logistics skill — Supply Chain Refresh is a strong match.', color: 'text-indigo-400', bg: 'bg-background border-indigo-600/10' },
-            { title: 'Skill Growth',        body: 'Acquiring Digital Forensics could unlock Level 4 Specialist missions.', color: 'text-emerald-400', bg: 'bg-background border-emerald-600/10' },
+            { title: 'RECOMMENDED OPERATIONAL DIRECTIVE', body: 'Based on your logistics skill profile — Supply Chain Refresh aligns with critical mission demand.', color: 'text-indigo-400', bg: 'bg-zinc-950/60 border-indigo-900/20' },
+            { title: 'COMPETENCY EXPANSION OPPORTUNITY',        body: 'Acquiring "Digital Forensics" unlocks high-priority Tier 4 Specialist operations.', color: 'text-emerald-400', bg: 'bg-zinc-950/60 border-emerald-900/20' },
           ].map((ins, i) => (
             <motion.div
               key={ins.title}
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ ...spring, delay: 0.1 + i * 0.08 }}
-              className={`p-4 rounded-2xl border ${ins.bg} space-y-1`}
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ ...spring, delay: 0.08 + i * 0.05 }}
+              className={`p-3 rounded border ${ins.bg} space-y-1`}
             >
-              <p className={`text-[10px] font-black uppercase tracking-widest ${ins.color}`}>{ins.title}</p>
-              <p className="text-[11px] text-muted-foreground/70 leading-relaxed">{ins.body}</p>
+              <p className={`text-[8px] font-mono uppercase tracking-wider ${ins.color} font-bold`}>{ins.title}</p>
+              <p className="text-[10px] font-mono text-zinc-400 leading-relaxed">{ins.body}</p>
             </motion.div>
           ))}
         </motion.div>
       </div>
 
       {/* ── Achievements ── */}
-      <div className="px-5 mb-6">
-        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 mb-3">Hall of Merit</p>
+      <div className="px-5 mb-8">
+        <p className="text-[9px] font-mono uppercase tracking-[0.3em] text-zinc-500 mb-3 flex items-center gap-2">
+          <span>[ DECORATIVE PROTOCOL ]</span>
+        </p>
         {(!user.badges || user.badges.length === 0) ? (
-          <div className="p-8 rounded-[2rem] bg-white/5 border border-white/5 text-center">
-            <Trophy className="h-8 w-8 mx-auto mb-2 text-amber-500/30" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/30">No badges yet</p>
+          <div className="p-6 rounded-xl bg-zinc-900/10 border border-zinc-900 text-center">
+            <Trophy className="h-6 w-6 mx-auto mb-2 text-zinc-600" />
+            <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-500">NO DECORATIVE SEALS RECORDED</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3">
@@ -381,15 +493,18 @@ export default function ProfilePage() {
               {user.badges.map((badge: any, i: number) => (
                 <motion.div
                   key={badge.id}
-                  initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
-                  transition={{ ...spring, delay: i * 0.07 }}
-                  whileHover={{ y: -5, scale: 1.01 }}
-                  className="p-5 rounded-[2rem] bg-card border border-border/50 shadow-xl shadow-black/5 flex flex-col items-center gap-3 text-center"
+                  initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                  transition={{ ...spring, delay: i * 0.05 }}
+                  className="p-4 rounded-xl bg-zinc-900/20 border border-zinc-900 flex flex-col items-center gap-3 text-center group cursor-default"
                 >
-                  <div className={`h-14 w-14 rounded-full bg-gradient-to-br ${badge.color || 'from-indigo-400 to-indigo-600'} flex items-center justify-center shadow-xl`}>
-                    <Award className="h-7 w-7 text-white" />
+                  <div className={cn("h-12 w-12 rounded-full bg-gradient-to-br flex items-center justify-center shadow-lg relative", badge.color || 'from-indigo-400 to-indigo-600')}>
+                    <Award className="h-6 w-6 text-white" />
+                    <div className="absolute inset-1 border border-white/20 rounded-full border-dashed animate-[spin_10s_linear_infinite]" />
                   </div>
-                  <p className="text-xs font-black tracking-tight leading-tight">{badge.name}</p>
+                  <div>
+                    <p className="text-[10px] font-mono uppercase tracking-tight text-zinc-200 font-bold leading-tight">{badge.name.toUpperCase()}</p>
+                    <p className="text-[8px] font-mono text-zinc-500 leading-tight mt-1 truncate max-w-full italic">{badge.flavor}</p>
+                  </div>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -398,11 +513,13 @@ export default function ProfilePage() {
       </div>
 
       {/* ── Activity ── */}
-      <div className="px-5 mb-6">
-        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 mb-3">Recent Activity</p>
+      <div className="px-5 mb-8">
+        <p className="text-[9px] font-mono uppercase tracking-[0.3em] text-zinc-500 mb-3 flex items-center gap-2">
+          <span>[ RECENT OPERATIONAL LOGS ]</span>
+        </p>
         {(!user.activities || user.activities.length === 0) ? (
-          <div className="p-8 rounded-[2rem] bg-card border border-border/50 text-center">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/30">No recent activity</p>
+          <div className="p-6 rounded-xl bg-zinc-900/10 border border-zinc-900 text-center">
+            <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-500">NO OPERATIONAL ENTRIES FOUND</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -410,26 +527,26 @@ export default function ProfilePage() {
               {user.activities.slice(0, 5).map((act: any, i: number) => (
                 <motion.div
                   key={act.id}
-                  initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                  transition={{ ...spring, delay: i * 0.06 }}
-                  className="flex items-center gap-4 p-4 rounded-[1.5rem] bg-card border border-border/50 group"
+                  initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                  transition={{ ...spring, delay: i * 0.05 }}
+                  className="flex items-center gap-3.5 p-3 rounded-lg bg-zinc-900/10 border border-zinc-900/80 group"
                 >
                   <div className={cn(
-                    "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border",
-                    act.status === 'Success'     ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' :
-                    act.status === 'Achievement' ? 'bg-amber-500/10  border-amber-500/20  text-amber-500'  :
-                                                   'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
+                    "h-8 w-8 rounded flex items-center justify-center shrink-0 border",
+                    act.status === 'Success'     ? 'bg-emerald-950/20 border-emerald-900/30 text-emerald-400' :
+                    act.status === 'Achievement' ? 'bg-amber-950/20  border-amber-900/30  text-amber-400'  :
+                                                   'bg-indigo-950/20 border-indigo-900/30 text-indigo-400'
                   )}>
-                    {act.status === 'Success' ? <CheckCircle2 className="h-4 w-4" /> :
-                     act.status === 'Achievement' ? <Trophy className="h-4 w-4" /> :
-                     <ActivityIcon className="h-4 w-4" />}
+                    {act.status === 'Success' ? <CheckCircle2 className="h-3.5 w-3.5" /> :
+                     act.status === 'Achievement' ? <Trophy className="h-3.5 w-3.5" /> :
+                     <ActivityIcon className="h-3.5 w-3.5" />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold truncate group-hover:text-indigo-400 transition-colors">{act.action}</p>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 mt-0.5">{act.time}</p>
+                    <p className="text-xs font-mono text-zinc-300 truncate group-hover:text-indigo-400 transition-colors font-bold uppercase">{act.action}</p>
+                    <p className="text-[8px] font-mono uppercase tracking-widest text-zinc-500 mt-0.5">{act.time}</p>
                   </div>
                   {act.xp && act.xp !== '0' && (
-                    <span className="text-[9px] font-black text-emerald-500 uppercase shrink-0">{act.xp} XP</span>
+                    <span className="text-[9px] font-mono text-emerald-400 uppercase shrink-0">+{act.xp} XP</span>
                   )}
                 </motion.div>
               ))}
@@ -441,11 +558,11 @@ export default function ProfilePage() {
       {/* ── Logout ── */}
       <div className="px-5 mb-4">
         <motion.button
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.98 }}
           onClick={handleLogout}
-          className="w-full h-12 rounded-2xl border border-rose-500/20 bg-rose-500/5 text-rose-500 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all duration-300"
+          className="w-full h-11 rounded border border-rose-950 bg-rose-950/10 text-rose-400 text-[10px] font-mono uppercase tracking-widest font-bold flex items-center justify-center gap-1.5 active:scale-98 transition-all hover:bg-rose-950/20 duration-200"
         >
-          <LogOut className="h-4 w-4" /> Sign Out
+          <LogOut className="h-3.5 w-3.5" /> DEAUTHORIZE_SESSION
         </motion.button>
       </div>
 

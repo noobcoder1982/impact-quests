@@ -291,10 +291,9 @@ aside .scrollbar-hide::-webkit-scrollbar {
     overflow-x: hidden;
   }
 
-  /* Optimize animations for mobile performance */
-  * {
-    animation-duration: 0.2s !important;
-    transition-duration: 0.2s !important;
+  /* Optimize transitions for specific UI elements on mobile */
+  .mobile-fast-transition {
+    transition-duration: 0.2s;
   }
   
   /* Reduce motion for better mobile performance */
@@ -305,6 +304,60 @@ aside .scrollbar-hide::-webkit-scrollbar {
       transition-duration: 0.01ms !important;
     }
   }
+}
+
+/* Gemini animated gradient system */
+@keyframes gemini-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gemini-gradient-bg {
+  background: linear-gradient(135deg, 
+    rgba(147, 51, 234, 0.08) 0%, 
+    rgba(79, 70, 229, 0.08) 25%, 
+    rgba(59, 130, 246, 0.08) 50%, 
+    rgba(168, 85, 247, 0.08) 75%, 
+    rgba(147, 51, 234, 0.08) 100%
+  );
+  background-size: 400% 400%;
+  animation: gemini-gradient 12s ease infinite;
+}
+
+.gemini-gradient-border {
+  position: relative;
+}
+
+.gemini-gradient-border::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, 
+    rgba(147, 51, 234, 0.3) 0%, 
+    rgba(79, 70, 229, 0.3) 25%, 
+    rgba(59, 130, 246, 0.3) 50%, 
+    rgba(168, 85, 247, 0.3) 75%, 
+    rgba(147, 51, 234, 0.3) 100%
+  );
+  background-size: 400% 400%;
+  animation: gemini-gradient 12s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Elegant Slow Pulse System */
+@keyframes slow-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+.animate-slow-pulse {
+  animation: slow-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Premium Dynamic Text Selection Highlight */

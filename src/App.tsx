@@ -133,121 +133,405 @@ function MobileNav({ onLogout }: { onLogout: () => void }) {
   // Which core link is active
   const activeCoreIndex = coreLinks.findIndex(l => location.pathname === l.path);
 
-  return (
-    <>
-      {/* ── Falling dropdown panel ── */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            key="nav-dropdown"
-            initial={{ y: "-100%", opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: "-100%", opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-            className="md:hidden fixed top-0 inset-x-0 z-[55] bg-background border-b-4 border-foreground flex flex-col max-h-[82vh] overflow-y-auto"
-            style={{ boxShadow: '0px 8px 0px hsl(var(--p))' }}
-          >
-            {/* Grid Overlay background */}
-            <div 
-              className="absolute inset-0 opacity-[0.05] pointer-events-none"
-              style={{
-                backgroundImage: `
-                  linear-gradient(to right, rgba(120, 120, 120, 0.4) 1px, transparent 1px),
-                  linear-gradient(to bottom, rgba(120, 120, 120, 0.4) 1px, transparent 1px)
-                `,
-                backgroundSize: '2rem 2rem',
-              }}
+  // Merge all links into a single, beautifully structured array for the Swiss Bento Grid
+  const allLinks = [
+    { 
+      icon: DashboardCircleIcon, 
+      path: "/dashboard", 
+      label: "Hub", 
+      span: "col-span-2", 
+      height: "h-[120px]", 
+      desc: "Global coordination & operational centre", 
+      show: true,
+      customBg: "bg-zinc-900/40 border-zinc-900 hover:border-zinc-800/80 hover:bg-zinc-900/60",
+      accent: "text-orange-500",
+      telemetry: (
+        <div className="flex flex-col gap-1.5 w-full mt-2 select-none">
+          <div className="flex items-center justify-between text-[8px] font-mono text-zinc-500 uppercase tracking-widest">
+            <span>Global Sync</span>
+            <span className="text-orange-500 font-bold">98.4%</span>
+          </div>
+          <div className="w-full bg-zinc-950/60 rounded-full h-1 overflow-hidden border border-zinc-900/40 relative">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: "98.4%" }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className="bg-orange-500 h-full rounded-full"
             />
+          </div>
+        </div>
+      )
+    },
+    { 
+      icon: BotIcon, 
+      path: "/ai-console", 
+      label: "AI Console", 
+      span: "col-span-1", 
+      height: "h-[128px]", 
+      show: true,
+      customBg: "gemini-gradient-bg gemini-gradient-border border-transparent bg-zinc-950/20 hover:bg-zinc-900/10",
+      accent: "text-purple-450",
+      telemetry: (
+        <div className="flex flex-col gap-1 w-full mt-1.5 select-none font-sans">
+          <div className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-purple-400 animate-slow-pulse" />
+            <span className="font-mono text-[8px] text-purple-400/80 uppercase tracking-wider font-semibold">COGNITION</span>
+          </div>
+          <span className="text-[8px] font-mono text-zinc-650 uppercase tracking-wide leading-tight mt-0.5">
+            NLP Core Ready
+          </span>
+        </div>
+      )
+    },
+    { 
+      icon: MarketIcon, 
+      path: "/marketplace",  
+      label: "Market",    
+      span: "col-span-1",    
+      height: "h-[128px]",
+      show: !isCustomer,
+      customBg: "bg-zinc-950 border-zinc-900/80 hover:border-zinc-800/80 hover:bg-zinc-900/20",
+      accent: "text-emerald-400",
+      telemetry: (
+        <div className="flex flex-col gap-1 w-full mt-1.5 select-none">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[8px] text-zinc-600 uppercase tracking-wider">MARKET STATE</span>
+            <span className="font-mono text-[8px] text-emerald-400 font-bold bg-emerald-950/40 px-1 py-0.5 rounded border border-emerald-900/30">OPEN</span>
+          </div>
+          <span className="text-[8px] font-mono text-zinc-650 uppercase tracking-wide leading-tight">
+            14 items online
+          </span>
+        </div>
+      )
+    },
+    { 
+      icon: MapPinIcon, 
+      path: "/map",           
+      label: "Strategic Map",  
+      span: "col-span-1",  
+      height: "h-[112px]",
+      show: !isCustomer,
+      customBg: "bg-zinc-950 border-zinc-900/80 hover:border-zinc-800/80 hover:bg-zinc-900/20",
+      accent: "text-sky-400",
+      telemetry: (
+        <div className="flex flex-col gap-0.5 w-full mt-2 font-mono text-[7.5px] text-zinc-550 leading-none select-none">
+          <span>LAT 40.7128° N</span>
+          <span>LON 74.0060° W</span>
+        </div>
+      )
+    },
+    { 
+      icon: PackageIcon, 
+      path: "/inventory",     
+      label: "Inventory",      
+      span: "col-span-1",      
+      height: "h-[112px]",
+      show: true,
+      customBg: "bg-zinc-950 border-zinc-900/80 hover:border-zinc-800/80 hover:bg-zinc-900/20",
+      accent: "text-amber-400",
+      telemetry: (
+        <div className="flex flex-col gap-0.5 w-full mt-2 select-none">
+          <div className="flex items-center justify-between text-[8px] font-mono text-zinc-650 uppercase">
+            <span>Secure Vault</span>
+            <span className="text-amber-500 font-semibold">3 Units</span>
+          </div>
+        </div>
+      )
+    },
+    { 
+      icon: ChatIcon,     
+      path: "/chat",          
+      label: "Messages",       
+      span: "col-span-1",       
+      height: "h-[112px]",
+      show: !isCustomer,
+      customBg: "bg-zinc-950 border-zinc-900/80 hover:border-zinc-800/80 hover:bg-zinc-900/20",
+      accent: "text-rose-400",
+      telemetry: (
+        <div className="flex items-center gap-1.5 mt-2 select-none">
+          <span className="h-1 w-1 rounded-full bg-rose-500 animate-slow-pulse" />
+          <span className="font-mono text-[8px] text-rose-400 uppercase tracking-wider font-semibold">SECURE NODE</span>
+        </div>
+      )
+    },
+    { 
+      icon: TaskIcon,     
+      path: "/assignments",   
+      label: "Assignments",    
+      span: "col-span-1",    
+      height: "h-[112px]",
+      show: isVolunteer,
+      customBg: "bg-zinc-950 border-zinc-900/80 hover:border-zinc-800/80 hover:bg-zinc-900/20",
+      accent: "text-yellow-500",
+      telemetry: (
+        <div className="flex items-center justify-between w-full mt-2 select-none">
+          <span className="font-mono text-[8px] text-zinc-600 uppercase tracking-wider">ACTIVE PLAN</span>
+          <span className="font-mono text-[8px] text-yellow-500 font-bold bg-yellow-950/40 px-1 py-0.5 rounded border border-yellow-900/30">2</span>
+        </div>
+      )
+    },
+    { 
+      icon: FlashIconNav, 
+      path: "/impact-score",  
+      label: "Impact Score",   
+      span: "col-span-1",   
+      height: "h-[128px]",
+      show: isVolunteer,
+      customBg: "bg-gradient-to-tr from-amber-950/10 via-zinc-950 to-zinc-950 border-amber-950/20 hover:border-amber-900/30",
+      accent: "text-amber-500",
+      telemetry: (
+        <div className="flex flex-col gap-1.5 w-full mt-2 select-none">
+          <div className="flex items-center justify-between text-[7.5px] font-mono text-zinc-550 uppercase tracking-wider">
+            <span>Level 4</span>
+            <span>90% XP</span>
+          </div>
+          <div className="w-full bg-zinc-900 rounded-full h-1 overflow-hidden">
+            <div className="bg-amber-500 h-full w-[90%]" />
+          </div>
+        </div>
+      )
+    },
+    { 
+      icon: CpuIconNav,   
+      path: "/mission-lab",   
+      label: "Mission Lab",    
+      span: "col-span-1",    
+      height: "h-[112px]",
+      show: isNgo,
+      customBg: "bg-zinc-950 border-zinc-900/80 hover:border-zinc-800/80 hover:bg-zinc-900/20",
+      accent: "text-cyan-400",
+      telemetry: (
+        <div className="flex items-center justify-between w-full mt-2 select-none">
+          <span className="font-mono text-[8px] text-zinc-600 uppercase tracking-wider">CREATOR NODE</span>
+        </div>
+      )
+    },
+    { 
+      icon: UserIcon,    
+      path: "/profile",    
+      label: "Profile",    
+      span: "col-span-1",    
+      height: "h-[112px]",
+      show: true,
+      customBg: "bg-zinc-950 border-zinc-900/80 hover:border-zinc-800/80 hover:bg-zinc-900/20",
+      accent: "text-indigo-400",
+      telemetry: (
+        <div className="flex items-center justify-between w-full mt-2 select-none">
+          <span className="font-mono text-[8px] text-zinc-600 uppercase tracking-wider">OPERATIVE</span>
+        </div>
+      )
+    },
+    { 
+      icon: Settings01Icon, 
+      path: "/settings",   
+      label: "Settings",   
+      span: "col-span-1",   
+      height: "h-[112px]",
+      show: true,
+      customBg: "bg-zinc-950 border-zinc-900/80 hover:border-zinc-800/80 hover:bg-zinc-900/20",
+      accent: "text-zinc-400",
+      telemetry: (
+        <div className="flex items-center justify-between w-full mt-2 select-none">
+          <span className="font-mono text-[8px] text-zinc-650 uppercase tracking-wider">SYSTEM CONFIG</span>
+        </div>
+      )
+    },
+  ].filter(l => l.show);
+  // Animation variants for the high-end Swiss curtain reveal
+  const dropdownVariants = {
+    hidden: {
+      clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)",
+      y: -10,
+      opacity: 0.95
+    },
+    show: {
+      clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        ease: [0.16, 1, 0.3, 1],
+        staggerChildren: 0.035,
+        delayChildren: 0.05
+      }
+    },
+    exit: {
+      clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)",
+      y: -15,
+      opacity: 0.9,
+      transition: {
+        duration: 0.45,
+        ease: [0.16, 1, 0.3, 1],
+        staggerChildren: 0.015,
+        staggerDirection: -1
+      }
+    }
+  };
 
-            {/* Header / Title bar with safe top-padding for mobile statusbars */}
-            <div className="flex items-center justify-between px-6 pt-10 pb-4 border-b-2 border-foreground bg-secondary/20 relative z-10">
-              <p className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-foreground">[ SYSTEM_CORE: NAVIGATE ]</p>
+  const linkVariants = {
+    hidden: { y: 15, opacity: 0 },
+    show: { 
+      y: 0, 
+      opacity: 1, 
+      transition: { 
+        duration: 0.45, 
+        ease: [0.16, 1, 0.3, 1] 
+      } 
+    },
+    exit: { 
+      y: 10, 
+      opacity: 0, 
+      transition: { 
+        duration: 0.25, 
+        ease: [0.16, 1, 0.3, 1] 
+      } 
+    }
+  };
+
+  return (
+    <>      {/* ── Falling dropdown panel ── */}
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          key="nav-dropdown"
+          variants={dropdownVariants}
+          initial="hidden"
+          animate="show"
+          exit="exit"
+          className="md:hidden fixed top-0 inset-x-0 z-[55] bg-zinc-950 text-white flex flex-col max-h-[85vh] border-b border-zinc-900 overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] rounded-b-[2rem] pt-6"
+        >
+          {/* Grid background for subtle blueprint aesthetic */}
+          <div 
+            className="absolute inset-0 opacity-[0.02] pointer-events-none z-0"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 1px, transparent 1px)
+              `,
+              backgroundSize: '2.5rem 2.5rem',
+            }}
+          />
+
+          {/* Premium Swiss Header Slot */}
+          <div className="flex items-center justify-between px-6 pt-6 pb-3 border-b border-zinc-900/60 relative z-10 select-none">
+            <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-white">Navigation</span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-emerald-500" />
+                <span className="font-mono text-[9px] text-zinc-500 uppercase tracking-widest">
+                  {user?.name ? `${user.name.split(" ")[0]} // ${user.role || 'Guest'}` : 'Guest Session'}
+                </span>
+              </div>
               <button
                 onClick={() => setOpen(false)}
-                className="px-2.5 py-1 bg-zinc-950 text-white font-mono text-[9px] border-2 border-foreground uppercase hover:bg-rose-500 transition-colors cursor-pointer"
+                className="font-mono text-[9px] tracking-wider uppercase text-zinc-550 hover:text-white transition-colors cursor-pointer"
               >
-                CLOSE
+                Close
               </button>
             </div>
+          </div>
 
-            {/* Core 4 — Beautiful 2x2 grid array separated by thick outlines */}
-            <div className="grid grid-cols-2 gap-0 border-b-2 border-foreground divide-y-2 divide-x-2 divide-foreground bg-background relative z-10">
-              {coreLinks.map((link, i) => {
+          {/* Core & Secondary Unified Bento Grid */}
+          <div className="flex-1 overflow-y-auto px-6 py-5 z-10 relative" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <style>{`
+              .flex-1::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
+            <div className="grid grid-cols-2 gap-2.5">
+              {allLinks.map((link, idx) => {
                 const isActive = location.pathname === link.path;
+                const numStr = String(idx + 1).padStart(2, '0');
+                const isWide = link.span === "col-span-2";
+
                 return (
                   <motion.button
                     key={link.path}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.04, type: 'spring', stiffness: 350, damping: 25 }}
+                    variants={linkVariants}
                     onClick={() => handleNav(link.path)}
                     className={cn(
-                      "flex flex-col items-center justify-center p-6 text-center select-none cursor-pointer transition-colors relative hover:bg-secondary/30",
-                      isActive ? "bg-[hsl(var(--p))] text-white" : "bg-card text-foreground"
+                      "group relative flex flex-col justify-between p-4 border rounded-2xl transition-all duration-300 text-left cursor-pointer overflow-hidden",
+                      link.span,
+                      link.height,
+                      isActive
+                        ? "bg-zinc-900 border-orange-500/30 shadow-[0_0_15px_rgba(249,115,22,0.06)]"
+                        : link.customBg || "bg-zinc-950 border-zinc-900/80 hover:border-zinc-800/80 hover:bg-zinc-900/20"
                     )}
                   >
-                    {/* Active corner tag */}
-                    {isActive && (
-                      <span className="absolute top-2 right-2 font-mono text-[6px] uppercase tracking-widest border border-white/40 px-1 py-0.2 bg-white/10 text-white">
-                        ACTIVE
+                    {/* Blueprint dot matrix in wide items */}
+                    {isWide && (
+                      <div className="absolute inset-0 opacity-[0.02] pointer-events-none"
+                           style={{
+                             backgroundImage: `radial-gradient(currentColor 1.5px, transparent 1.5px)`,
+                             backgroundSize: '10px 10px'
+                           }}
+                      />
+                    )}
+
+                    {/* Top bar inside the Bento Cell */}
+                    <div className="w-full flex items-center justify-between relative z-10">
+                      <span className="font-mono text-[9px] text-zinc-650 tracking-wider font-light">
+                        {numStr}
                       </span>
-                    )}
-                    <div className={cn(
-                      "h-10 w-10 border-2 border-foreground flex items-center justify-center mb-2.5 transition-transform",
-                      isActive ? "bg-white text-[hsl(var(--p))]" : "bg-secondary text-foreground"
-                    )}>
-                      <link.icon size={20} />
+                      <link.icon 
+                        size={15} 
+                        className={cn(
+                          "transition-colors duration-300",
+                          isActive ? "text-orange-500" : (link.accent || "text-zinc-500 group-hover:text-zinc-350")
+                        )} 
+                      />
                     </div>
-                    <span className="text-xs font-black uppercase tracking-wider font-sans leading-none">{link.label}</span>
+
+                    {/* Bottom / Text content inside the Bento Cell */}
+                    <div className="w-full flex flex-col mt-auto relative z-10">
+                      <div className="w-full flex items-baseline justify-between">
+                        <span className={cn(
+                          "text-xs font-semibold tracking-tight transition-colors duration-300",
+                          isActive ? "text-white" : "text-zinc-450 group-hover:text-white"
+                        )}>
+                          {link.label}
+                        </span>
+
+                        {isActive && (
+                          <motion.span 
+                            layoutId="mobile-swiss-active-dot"
+                            className="h-1.5 w-1.5 rounded-full bg-orange-500" 
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                          />
+                        )}
+                      </div>
+
+                      {/* Custom telemetry or description inside the Bento Cell */}
+                      {link.telemetry ? (
+                        link.telemetry
+                      ) : (
+                        isWide && link.desc && (
+                          <span className="text-[8px] font-mono text-zinc-600 uppercase tracking-wider mt-1 block truncate">
+                            {link.desc}
+                          </span>
+                        )
+                      )}
+                    </div>
                   </motion.button>
                 );
               })}
             </div>
+          </div>
 
-            {/* Secondary — 2-col compact grid separated by standard neo outlines */}
-            <div className="grid grid-cols-2 gap-0 divide-y divide-x divide-foreground bg-background border-b border-foreground relative z-10">
-              {secondaryLinks.map((link, i) => {
-                const isActive = location.pathname === link.path;
-                return (
-                  <motion.button
-                    key={link.path}
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15 + i * 0.03, type: 'spring', stiffness: 350, damping: 25 }}
-                    onClick={() => handleNav(link.path)}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-secondary/30",
-                      isActive 
-                        ? "bg-[hsl(var(--p))]/10 text-[hsl(var(--p))]" 
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <div className={cn(
-                      "h-6 w-6 border border-foreground flex items-center justify-center shrink-0",
-                      isActive ? "bg-[hsl(var(--p))]/20 text-[hsl(var(--p))]" : "bg-secondary text-muted-foreground"
-                    )}>
-                      <link.icon size={12} />
-                    </div>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider leading-none flex-1 truncate">{link.label}</span>
-                  </motion.button>
-                );
-              })}
-            </div>
+            {/* Footer details & Sign out */}
+            <div className="mt-auto px-6 pt-4 pb-6 border-t border-zinc-900/80 bg-zinc-950 relative z-10 flex flex-col gap-4 text-white">
+              <div className="flex items-center justify-between text-zinc-550 text-[9px] font-mono tracking-wider uppercase">
+                <span>2026 impactquest</span>
+                <span>system v2.0.4</span>
+              </div>
 
-            {/* Logout Row */}
-            <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, type: 'spring', stiffness: 350, damping: 25 }}
-              className="p-4 bg-secondary/15 relative z-10"
-            >
               <button
                 onClick={() => { setOpen(false); onLogout(); }}
-                className="w-full py-3.5 bg-rose-500 hover:bg-rose-600 text-white border-2 border-foreground font-mono text-xs font-black uppercase tracking-widest transition-all shadow-[4px_4px_0px_#000] active:scale-95 active:shadow-none"
+                className="w-full py-2.5 bg-zinc-900 hover:bg-rose-950/20 hover:text-rose-450 border border-zinc-800 hover:border-rose-900/40 rounded-xl text-zinc-400 hover:text-white font-mono text-[10px] font-bold uppercase tracking-widest transition-all duration-300 active:scale-[0.98]"
               >
-                Sign Out / End Protocol
+                Sign Out / Terminate Node
               </button>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -257,23 +541,24 @@ function MobileNav({ onLogout }: { onLogout: () => void }) {
         {open && (
           <motion.div
             key="nav-backdrop"
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, backdropFilter: "blur(0px)" }} 
+            animate={{ opacity: 1, backdropFilter: "blur(12px)" }} 
+            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            transition={{ duration: 0.45, ease: "easeInOut" }}
             onClick={() => setOpen(false)}
-            className="md:hidden fixed inset-0 z-[54] bg-background/50 backdrop-blur-md"
+            className="md:hidden fixed inset-0 z-[54] bg-black/60"
           />
         )}
       </AnimatePresence>
 
-      {/* ── Floating pill ── */}
+      {/* ── Docked Bottom Swiss Nav Console ── */}
       <motion.div
-        initial={{ y: 100, opacity: 0 }}
+        initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 30, delay: 0.1 }}
-        className="md:hidden fixed bottom-6 inset-x-0 z-[60] flex justify-center pointer-events-none"
+        transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.05 }}
+        className="md:hidden fixed bottom-0 inset-x-0 z-[60] bg-zinc-950/95 backdrop-blur-2xl border-t border-zinc-900 flex flex-col justify-end shadow-[0_-8px_30px_rgba(0,0,0,0.5)]"
       >
-        <div className="flex items-center bg-foreground rounded-full px-2 py-2 gap-1 shadow-[0_8px_32px_rgba(0,0,0,0.25)] pointer-events-auto">
+        <div className="h-[68px] flex items-center justify-between w-full max-w-md mx-auto relative px-3">
           {coreLinks.map((link, i) => {
             const isActive = !open && location.pathname === link.path;
             return (
@@ -281,134 +566,223 @@ function MobileNav({ onLogout }: { onLogout: () => void }) {
                 key={link.path}
                 to={link.path}
                 onClick={() => open && setOpen(false)}
-                className={cn(
-                  "relative flex items-center justify-center rounded-full transition-all duration-200",
-                  isActive
-                    ? "bg-background text-foreground w-12 h-12"
-                    : "text-background/50 w-11 h-11 hover:text-background"
-                )}
+                className="relative flex flex-col items-center justify-center flex-1 h-full py-1 text-center group transition-colors duration-200"
               >
-                <link.icon size={isActive ? 20 : 18} />
+                {/* Precision Active Top Bar Accent */}
                 {isActive && (
                   <motion.div
-                    layoutId="pill-active"
-                    className="absolute inset-0 rounded-full bg-background"
-                    style={{ zIndex: -1 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                    layoutId="swiss-nav-top-line"
+                    className="absolute top-0 inset-x-3.5 h-[2.5px] bg-orange-500 rounded-full"
+                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                   />
                 )}
+
+                <div className="flex flex-col items-center gap-1 mt-1">
+                  <link.icon 
+                    size={17} 
+                    className={cn(
+                      "transition-all duration-200",
+                      isActive 
+                        ? "text-orange-500 scale-[1.05]" 
+                        : "text-zinc-550 group-hover:text-zinc-300"
+                    )} 
+                  />
+                  <span 
+                    className={cn(
+                      "font-sans text-[8.5px] font-bold uppercase tracking-wider transition-colors duration-200",
+                      isActive 
+                        ? "text-white" 
+                        : "text-zinc-550 group-hover:text-zinc-400"
+                    )}
+                  >
+                    {link.label}
+                  </span>
+                </div>
               </Link>
             );
           })}
 
-          {/* Separator */}
-          <div className="w-px h-5 bg-background/20 mx-1" />
+          {/* Blueprint Vertical Separator */}
+          <div className="w-px h-6 bg-zinc-900 mx-1 shrink-0 self-center" />
 
-          {/* Menu toggle */}
-          <motion.button
+          {/* Menu Toggle */}
+          <button
             onClick={() => setOpen(v => !v)}
-            animate={{ rotate: open ? 45 : 0 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-            className="flex items-center justify-center w-11 h-11 rounded-full text-background/60 hover:text-background transition-colors"
+            className={cn(
+              "relative flex flex-col items-center justify-center w-14 h-full py-1 group transition-colors duration-200 shrink-0"
+            )}
           >
-            <Menu size={18} />
-          </motion.button>
+            {/* Precision Active Top Bar Accent for Menu Open State */}
+            {open && (
+              <motion.div
+                layoutId="swiss-nav-top-line"
+                className="absolute top-0 inset-x-3.5 h-[2.5px] bg-orange-500 rounded-full"
+                transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+              />
+            )}
+            
+            <div className="flex flex-col items-center gap-1 mt-1">
+              <motion.div
+                animate={{ rotate: open ? 45 : 0 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                className={cn(
+                  "transition-colors duration-200",
+                  open ? "text-orange-500" : "text-zinc-500 group-hover:text-zinc-300"
+                )}
+              >
+                <Menu size={17} />
+              </motion.div>
+              <span 
+                className={cn(
+                  "font-sans text-[8.5px] font-bold uppercase tracking-wider transition-colors duration-200",
+                  open ? "text-white" : "text-zinc-550 group-hover:text-zinc-400"
+                )}
+              >
+                {open ? "Close" : "Menu"}
+              </span>
+            </div>
+          </button>
         </div>
+        
+        {/* Device Safe Area padding at bottom */}
+        <div className="h-[env(safe-area-inset-bottom)] bg-zinc-950" />
       </motion.div>
     </>
   );
 }
 
-function InfiniteWheel({ navItems, location, onSelect }: { navItems: any[], location: any, onSelect: () => void }) {
-  const y = useMotionValue(0);
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const velocityRef = React.useRef(0);
-  const rafRef = React.useRef<number | null>(null);
-  
-  const itemHeight = 110; 
-  const totalItemsHeight = navItems.length * itemHeight;
-
-  // Wrap y infinitely
-  React.useEffect(() => {
-    return y.onChange((latest) => {
-      if (latest > 0) y.set(latest - totalItemsHeight);
-      else if (latest < -totalItemsHeight) y.set(latest + totalItemsHeight);
-    });
-  }, [totalItemsHeight, y]);
-
-  // Inertia loop — runs while there is velocity
-  const startInertia = React.useCallback(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    const loop = () => {
-      velocityRef.current *= 0.88; // friction — lower = stops faster
-      if (Math.abs(velocityRef.current) < 0.1) {
-        velocityRef.current = 0;
-        return;
+function SwissDesignNav({ 
+  navItems, 
+  location, 
+  onSelect,
+  isAuthenticated 
+}: { 
+  navItems: any[], 
+  location: any, 
+  onSelect: () => void,
+  isAuthenticated: boolean
+}) {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.05
       }
-      y.set(y.get() + velocityRef.current);
-      rafRef.current = requestAnimationFrame(loop);
-    };
-    rafRef.current = requestAnimationFrame(loop);
-  }, [y]);
+    }
+  };
 
-  // Wheel → add to velocity, let inertia carry it
-  React.useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      velocityRef.current -= e.deltaY * 0.18;
-      startInertia();
-    };
-    el.addEventListener('wheel', onWheel, { passive: false });
-    return () => {
-      el.removeEventListener('wheel', onWheel);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, [startInertia]);
-
-  const displayItems = [...navItems, ...navItems, ...navItems];
+  const itemVariants = {
+    hidden: { y: 15, opacity: 0 },
+    show: { 
+      y: 0, 
+      opacity: 1, 
+      transition: { 
+        duration: 0.5, 
+        ease: [0.16, 1, 0.3, 1] 
+      } 
+    }
+  };
 
   return (
-    <div ref={containerRef} className="w-full h-full overflow-hidden">
-      <motion.div
-        drag="y"
-        dragConstraints={{ top: -Infinity, bottom: Infinity }}
-        dragElastic={0}
-        dragMomentum={false}
-        style={{ y }}
-        onDrag={(_, info) => {
-          velocityRef.current = info.delta.y * 2;
-        }}
-        onDragEnd={() => startInertia()}
-        className="flex flex-col items-stretch w-full cursor-grab active:cursor-grabbing select-none"
+    <div className="w-full h-full flex flex-col justify-between overflow-y-auto pb-8 select-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <style>{`
+        .w-full::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+
+      {/* Navigation Items List */}
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="flex flex-col w-full px-6 md:px-12 pt-4 space-y-4"
       >
-        {displayItems.map((item, i) => {
+        {navItems.map((item, idx) => {
           const isActive = location.pathname === item.path;
+          const numStr = String(idx + 1).padStart(2, '0');
           return (
             <motion.div
-              key={`${item.name}-${i}`}
-              style={{ height: itemHeight }}
-              className="flex flex-col justify-center border-b border-white/10 mx-8"
+              key={`${item.name}-${idx}`}
+              variants={itemVariants}
+              className="border-b border-zinc-900/40 last:border-b-0 pb-1"
             >
               <Link
                 to={item.path}
                 onClick={onSelect}
-                className={cn(
-                  "flex items-center justify-between text-5xl md:text-8xl font-black tracking-tighter uppercase transition-all duration-500 py-4 group/item",
-                  isActive ? "text-orange-500" : "text-white/10 hover:[text-shadow:0_0_1px_white] hover:text-transparent hover:[-webkit-text-stroke:1.5px_white]"
-                )}
+                className="flex items-baseline justify-between py-2 group/item w-full relative overflow-hidden"
               >
-                <span className="transition-transform duration-500 will-change-transform group-hover/item:translate-x-8">{item.name}</span>
-                {isActive && (
-                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
-                    <ArrowRight size={32} strokeWidth={2} className="text-orange-500" />
-                  </motion.div>
-                )}
+                <div className="flex items-baseline gap-6">
+                  {/* Fine Swiss-style Mono Index */}
+                  <span className="font-mono text-xs text-zinc-500 font-light select-none w-6">
+                    {numStr}
+                  </span>
+                  
+                  {/* Clean Grotesque Heading */}
+                  <span className={cn(
+                    "text-3xl sm:text-4xl font-semibold tracking-tight transition-all duration-500 ease-out",
+                    isActive 
+                      ? "text-white translate-x-2" 
+                      : "text-zinc-500 group-hover/item:text-white group-hover/item:translate-x-2"
+                  )}>
+                    {item.name}
+                  </span>
+                </div>
+
+                {/* Subtitle / Active indicator */}
+                <div className="flex items-center gap-3">
+                  {isActive ? (
+                    <motion.div 
+                      layoutId="swiss-active-dot"
+                      className="h-1.5 w-1.5 rounded-full bg-orange-500" 
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  ) : (
+                    <ArrowRight 
+                      size={14} 
+                      className="text-zinc-700 opacity-0 group-hover/item:opacity-100 group-hover/item:text-zinc-400 transition-all duration-300 transform translate-x-[-4px] group-hover/item:translate-x-0" 
+                    />
+                  )}
+                </div>
               </Link>
             </motion.div>
           );
         })}
+      </motion.div>
+
+      {/* Swiss Minimalist Status Area */}
+      <motion.div 
+        initial={{ y: 15, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.25, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="px-6 md:px-12 mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6"
+      >
+        {/* Left Column: Fine-printed Metadata */}
+        <div className="flex flex-col gap-1.5 text-left border-t border-zinc-900/50 pt-4">
+          <div className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-mono text-[10px] tracking-wider text-zinc-450 uppercase font-medium">Node protocol active</span>
+          </div>
+          <p className="font-sans text-xs text-zinc-500 leading-relaxed max-w-xs">
+            Global routing engine is fully operational. Open quests are synced to active coordination channels.
+          </p>
+        </div>
+
+        {/* Right Column: Swiss minimalist CTA */}
+        <div className="flex flex-col justify-end items-start sm:items-end border-t border-zinc-900/50 sm:border-t pt-4">
+          <Link
+            to={isAuthenticated ? "/dashboard" : "/signin"}
+            onClick={onSelect}
+            className="group/cta flex items-center gap-2.5 text-xs font-semibold uppercase tracking-wider text-white hover:text-orange-500 transition-colors duration-300"
+          >
+            <span>{isAuthenticated ? 'Launch dashboard' : 'Begin enrollment'}</span>
+            <div className="h-7 w-7 rounded-full bg-zinc-900 group-hover/cta:bg-orange-500/10 flex items-center justify-center transition-all duration-300">
+              <ArrowRight size={12} className="text-zinc-400 group-hover/cta:text-orange-500 transition-all duration-300 transform group-hover/cta:translate-x-0.5" />
+            </div>
+          </Link>
+        </div>
       </motion.div>
     </div>
   );
@@ -481,24 +855,35 @@ function Navbar({ isAuthenticated, onLogout }: { isAuthenticated: boolean, onLog
             initial={{ y: "-100%", opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "-100%", opacity: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-0 z-[100] bg-zinc-950 flex flex-col overflow-hidden text-white pt-20"
           >
-            {/* Infinite Wheel List with List Item UI */}
-            <div className="flex-1 relative overflow-hidden flex flex-col justify-start mt-4">
-               {/* Edge Masks */}
-               <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-zinc-950 to-transparent z-20 pointer-events-none" />
-               <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-zinc-950 to-transparent z-20 pointer-events-none" />
+            {/* 1. Structural Blueprint Grid Background */}
+            <div 
+              className="absolute inset-0 opacity-[0.02] pointer-events-none z-0"
+              style={{
+                backgroundImage: `
+                  linear-gradient(to right, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+                  linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 1px, transparent 1px)
+                `,
+                backgroundSize: '3.5rem 3.5rem',
+              }}
+            />
 
-               <div className="h-full">
-                  <InfiniteWheel navItems={navItems} location={location} onSelect={() => setIsMobileMenuOpen(false)} />
-               </div>
+            {/* Navigation List Container */}
+            <div className="flex-1 relative z-10 overflow-hidden flex flex-col justify-start mt-4">
+              <SwissDesignNav 
+                navItems={navItems} 
+                location={location} 
+                onSelect={() => setIsMobileMenuOpen(false)} 
+                isAuthenticated={isAuthenticated} 
+              />
             </div>
 
             {/* Menu Footer Redesign - Image Inspired */}
-            <div className="mt-auto relative z-10 border-t border-white/10">
+            <div className="mt-auto relative z-10 border-t border-zinc-900">
                {/* Info Strip */}
-               <div className="px-8 py-4 flex items-center justify-between text-white/20 text-[9px] font-black uppercase tracking-[0.4em] border-b border-white/5">
+               <div className="px-8 py-4 flex items-center justify-between text-zinc-500 text-[10px] font-medium tracking-[0.2em] uppercase border-b border-zinc-900/50">
                   <span>2026</span>
                   <div className="flex gap-6">
                      <span className="cursor-pointer hover:text-white transition-colors">Privacy</span>
@@ -507,21 +892,44 @@ function Navbar({ isAuthenticated, onLogout }: { isAuthenticated: boolean, onLog
                </div>
 
                {/* Auth Bar */}
-               <div className="border-t border-white/10 grid grid-cols-2 h-20 bg-zinc-950">
-                  <Link 
-                     to="/signin" 
-                     onClick={() => setIsMobileMenuOpen(false)}
-                     className="flex items-center justify-center border-r border-white/10 text-xl font-medium tracking-tighter uppercase hover:bg-white/5 transition-colors"
-                  >
-                     Log In
-                  </Link>
-                  <Link 
-                     to="/signin" 
-                     onClick={() => setIsMobileMenuOpen(false)}
-                     className="flex items-center justify-center text-xl font-medium tracking-tighter uppercase hover:bg-white/5 transition-colors"
-                  >
-                     Sign Up
-                  </Link>
+               <div className="border-t border-zinc-900 grid grid-cols-2 h-20 bg-zinc-950">
+                  {isAuthenticated ? (
+                    <>
+                      <Link 
+                         to="/dashboard" 
+                         onClick={() => setIsMobileMenuOpen(false)}
+                         className="flex items-center justify-center border-r border-zinc-900 text-xs font-semibold uppercase tracking-wider hover:bg-zinc-900/20 text-zinc-300 hover:text-white transition-colors"
+                      >
+                         Dashboard
+                      </Link>
+                      <button 
+                         onClick={() => {
+                           setIsMobileMenuOpen(false);
+                           onLogout();
+                         }}
+                         className="flex items-center justify-center text-xs font-semibold uppercase tracking-wider hover:bg-zinc-900/20 text-zinc-500 hover:text-rose-500 transition-colors"
+                      >
+                         Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link 
+                         to="/signin" 
+                         onClick={() => setIsMobileMenuOpen(false)}
+                         className="flex items-center justify-center border-r border-zinc-900 text-xs font-semibold uppercase tracking-wider hover:bg-zinc-900/20 text-zinc-300 hover:text-white transition-colors"
+                      >
+                         Log In
+                      </Link>
+                      <Link 
+                         to="/signin" 
+                         onClick={() => setIsMobileMenuOpen(false)}
+                         className="flex items-center justify-center text-xs font-semibold uppercase tracking-wider hover:bg-zinc-900/20 text-zinc-300 hover:text-white transition-colors"
+                      >
+                         Sign Up
+                      </Link>
+                    </>
+                  )}
                </div>
             </div>
           </motion.div>

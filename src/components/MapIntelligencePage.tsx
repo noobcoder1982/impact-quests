@@ -26,6 +26,7 @@ export default function MapIntelligencePage() {
   const [selectedZone, setSelectedZone] = React.useState<string | null>(null)
   const [userLocation, setUserLocation] = React.useState<[number, number] | null>(null)
   const [searchQuery, setSearchQuery] = React.useState("")
+  const [isSheetExpanded, setIsSheetExpanded] = React.useState(false)
   const mapRef = React.useRef<MapRef>(null)
 
   const handleSearch = async () => {
@@ -133,7 +134,12 @@ export default function MapIntelligencePage() {
              className="w-full h-full"
              theme={theme === 'dark' ? 'dark' : 'light'}
            >
-             <MapControls position="bottom-left" showCompass showZoom showLocate />
+             <MapControls 
+                position={window.innerWidth < 768 ? "bottom-right" : "bottom-left"} 
+                showCompass 
+                showZoom 
+                showLocate 
+              />
              
              {/* --- MISSION PINS (LIVE DATA) --- */}
              {!loading && tasks.slice(0, 50).map((task, i) => {
@@ -288,36 +294,77 @@ export default function MapIntelligencePage() {
          ))}
       </div>
 
-      {/* Mobile Bottom Sheet for Task List */}
-      <div className="md:hidden absolute bottom-20 left-0 right-0 z-30 pointer-events-none">
-        <div className="bg-background/90 backdrop-blur-3xl border-t border-border/50 rounded-t-[2.5rem] p-5 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] max-h-[40vh] overflow-y-auto pointer-events-auto">
-          <div className="flex items-center justify-between mb-5 px-1">
-            <h3 className="text-xl font-black text-foreground">Live Operations</h3>
-            <span className="text-sm font-bold text-muted-foreground bg-secondary px-3 py-1 rounded-full">{tasks.length} tasks</span>
+      {/* Mobile Collapsible Bottom Sheet for Task List */}
+      <div className="md:hidden absolute bottom-[76px] left-4 right-4 z-40 pointer-events-none">
+        <motion.div 
+          animate={{ height: isSheetExpanded ? 'auto' : '54px' }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className="w-full bg-zinc-950/90 backdrop-blur-3xl border border-zinc-900 rounded-[1.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] overflow-hidden pointer-events-auto flex flex-col"
+        >
+          {/* Toggle Header */}
+          <div 
+            onClick={() => setIsSheetExpanded(v => !v)}
+            className="h-[54px] flex items-center justify-between px-5 cursor-pointer select-none border-b border-zinc-900/60"
+          >
+            <div className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-300 font-bold">
+                [ TACTICAL OPERATIONS LEDGER ]
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[8px] bg-zinc-900 border border-zinc-800 text-zinc-400 px-2 py-0.5 rounded">
+                {tasks.length} ACTIVE
+              </span>
+              <motion.div animate={{ rotate: isSheetExpanded ? 90 : 0 }}>
+                <ChevronRight className="h-3.5 w-3.5 text-zinc-500" />
+              </motion.div>
+            </div>
           </div>
-          <div className="space-y-3">
-            {loading ? (
-              <div className="animate-pulse space-y-3">
-                {[1,2,3].map(i => <div key={i} className="h-16 bg-muted rounded-2xl" />)}
-              </div>
-            ) : tasks.slice(0, 5).map((task) => (
-              <div key={task._id} className="bg-card border border-border/50 rounded-2xl p-4 shadow-sm active:scale-95 transition-all">
-                <div className="flex justify-between items-center mb-2">
-                  <span className={cn(
-                    "text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-md",
-                    task.urgency === 'critical' || task.priority === 'Critical' ? 'bg-rose-500/10 text-rose-500' :
-                    task.urgency === 'high' || task.priority === 'High' ? 'bg-orange-500/10 text-orange-500' :
-                    'bg-emerald-500/10 text-emerald-500'
-                  )}>
-                    {task.urgency || task.priority}
-                  </span>
-                  <span className="text-[10px] font-bold text-muted-foreground">{task.category}</span>
-                </div>
-                <p className="text-sm font-bold leading-tight text-foreground line-clamp-1">{task.title}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+
+          {/* Expanded Content */}
+          <AnimatePresence>
+            {isSheetExpanded && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="p-5 max-h-[35vh] overflow-y-auto space-y-3"
+              >
+                {loading ? (
+                  <div className="animate-pulse space-y-3">
+                    {[1,2,3].map(i => <div key={i} className="h-16 bg-zinc-900 rounded-xl" />)}
+                  </div>
+                ) : tasks.length === 0 ? (
+                  <div className="text-center py-6 text-zinc-500 font-mono text-[10px] uppercase tracking-wider">
+                    No active operations detected in this sector
+                  </div>
+                ) : (
+                  tasks.slice(0, 8).map((task) => (
+                    <motion.div 
+                      key={task._id} 
+                      whileTap={{ scale: 0.98 }}
+                      className="bg-zinc-900/40 border border-zinc-900 rounded-xl p-3.5 active:bg-zinc-900/80 transition-colors cursor-pointer"
+                    >
+                      <div className="flex justify-between items-center mb-1.5">
+                        <span className={cn(
+                          "text-[8px] font-mono uppercase tracking-widest px-2 py-0.5 rounded",
+                          task.priority === 'Critical' ? 'bg-rose-950/20 border border-rose-900/30 text-rose-400' :
+                          task.priority === 'High' ? 'bg-orange-950/20 border border-orange-900/30 text-orange-400' :
+                          'bg-emerald-950/20 border border-emerald-900/30 text-emerald-400'
+                        )}>
+                          {task.priority || 'STABLE'}
+                        </span>
+                        <span className="text-[8px] font-mono uppercase tracking-wider text-zinc-500">{task.category}</span>
+                      </div>
+                      <p className="text-xs font-mono text-zinc-200 font-bold line-clamp-1">{task.title.toUpperCase()}</p>
+                    </motion.div>
+                  ))
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </div>
 
     </div>
