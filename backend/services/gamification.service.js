@@ -186,7 +186,7 @@ const getLeaderboard = async (limit = 10) => {
       points: user.points,
       level: user.level,
       tasksCompleted: user.tasksCompleted,
-      badgeCount: user.badges.length,
+      badgeCount: user.badges ? user.badges.length : 0,
       reliabilityScore: user.reliabilityScore,
       currentStreak: user.currentStreak,
     }));

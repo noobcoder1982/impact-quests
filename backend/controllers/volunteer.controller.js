@@ -138,8 +138,8 @@ const getVolunteerBadges = async (req, res, next) => {
       name: volunteer.name,
       level: volunteer.level,
       points: volunteer.points,
-      badges: volunteer.badges,
-      totalBadges: volunteer.badges.length,
+      badges: volunteer.badges || [],
+      totalBadges: volunteer.badges ? volunteer.badges.length : 0,
     });
   } catch (error) {
     next(error);

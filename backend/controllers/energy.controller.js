@@ -18,7 +18,7 @@ const getEnergyStatus = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return errorResponse(res, 'User not found', 404);
+      return errorResponse(res, 404, 'User not found');
     }
 
     // Get burnout analysis
@@ -55,7 +55,7 @@ const getEnergyStatus = async (req, res) => {
       ]
     };
 
-    return successResponse(res, response, 'Energy status retrieved successfully');
+    return successResponse(res, 200, 'Energy status retrieved successfully', response);
   } catch (error) {
     console.error('Get energy status error:', error);
     return errorResponse(res, error.message || 'Failed to get energy status', 500);
@@ -74,11 +74,11 @@ const submitFeedback = async (req, res) => {
 
     // Validate required fields
     if (!taskId) {
-      return errorResponse(res, 'Task ID is required', 400);
+      return errorResponse(res, 400, 'Task ID is required');
     }
 
     if (!mentalDrain || !focusQuality || !capacityForMore || !actualDifficulty) {
-      return errorResponse(res, 'All feedback fields are required', 400);
+      return errorResponse(res, 400, 'All feedback fields are required');
     }
 
     // Validate field values
@@ -88,19 +88,19 @@ const submitFeedback = async (req, res) => {
     const validDifficulty = ['easy', 'medium', 'hard', 'very-hard'];
 
     if (!validMentalDrain.includes(mentalDrain)) {
-      return errorResponse(res, 'Invalid mental drain value', 400);
+      return errorResponse(res, 400, 'Invalid mental drain value');
     }
 
     if (!validFocusQuality.includes(focusQuality)) {
-      return errorResponse(res, 'Invalid focus quality value (must be 1-5)', 400);
+      return errorResponse(res, 400, 'Invalid focus quality value (must be 1-5)');
     }
 
     if (!validCapacity.includes(capacityForMore)) {
-      return errorResponse(res, 'Invalid capacity value', 400);
+      return errorResponse(res, 400, 'Invalid capacity value');
     }
 
     if (!validDifficulty.includes(actualDifficulty)) {
-      return errorResponse(res, 'Invalid difficulty value', 400);
+      return errorResponse(res, 400, 'Invalid difficulty value');
     }
 
     const feedback = {
@@ -128,7 +128,7 @@ const submitFeedback = async (req, res) => {
       response.warning = 'Some feedback patterns were flagged for review. Your trust score may be affected.';
     }
 
-    return successResponse(res, response, 'Feedback submitted successfully');
+    return successResponse(res, 200, 'Feedback submitted successfully', response);
   } catch (error) {
     console.error('Submit feedback error:', error);
     return errorResponse(res, error.message || 'Failed to submit feedback', 500);
@@ -164,7 +164,7 @@ const getRecommendations = async (req, res) => {
       detailedRecommendations: burnoutAnalysis.recommendations
     };
 
-    return successResponse(res, response, 'Recommendations retrieved successfully');
+    return successResponse(res, 200, 'Recommendations retrieved successfully', response);
   } catch (error) {
     console.error('Get recommendations error:', error);
     return errorResponse(res, error.message || 'Failed to get recommendations', 500);
@@ -214,7 +214,7 @@ const getEnergyHistory = async (req, res) => {
       focusScore: user.focusScore
     };
 
-    return successResponse(res, response, 'Energy history retrieved successfully');
+    return successResponse(res, 200, 'Energy history retrieved successfully', response);
   } catch (error) {
     console.error('Get energy history error:', error);
     return errorResponse(res, error.message || 'Failed to get energy history', 500);
@@ -269,7 +269,7 @@ const takeRest = async (req, res) => {
       message: `Rest recorded. Energy restored by ${energyRestored} points.`
     };
 
-    return successResponse(res, response, 'Rest period recorded successfully');
+    return successResponse(res, 200, 'Rest period recorded successfully', response);
   } catch (error) {
     console.error('Take rest error:', error);
     return errorResponse(res, error.message || 'Failed to record rest', 500);

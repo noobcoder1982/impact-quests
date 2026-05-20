@@ -22,21 +22,21 @@ async function analyzeMission(req, res) {
 
     // Validate request
     if (!missionDescription) {
-      return errorResponse(res, 'Mission description is required', 400);
+      return errorResponse(res, 400, 'Mission description is required');
     }
 
     if (typeof missionDescription !== 'string') {
-      return errorResponse(res, 'Mission description must be a string', 400);
+      return errorResponse(res, 400, 'Mission description must be a string');
     }
 
     if (missionDescription.trim().length < 10) {
-      return errorResponse(res, 'Mission description is too short. Please provide at least 10 characters.', 400);
+      return errorResponse(res, 400, 'Mission description is too short. Please provide at least 10 characters.');
     }
 
     // Validate topN if provided
     const limit = topN ? parseInt(topN) : 3;
     if (isNaN(limit) || limit < 1 || limit > 10) {
-      return errorResponse(res, 'topN must be a number between 1 and 10', 400);
+      return errorResponse(res, 400, 'topN must be a number between 1 and 10');
     }
 
     console.log(`📋 Analyzing mission: "${missionDescription.substring(0, 50)}..."`);
@@ -97,11 +97,11 @@ async function extractFeatures(req, res) {
 
     // Validate request
     if (!missionDescription) {
-      return errorResponse(res, 'Mission description is required', 400);
+      return errorResponse(res, 400, 'Mission description is required');
     }
 
     if (typeof missionDescription !== 'string') {
-      return errorResponse(res, 'Mission description must be a string', 400);
+      return errorResponse(res, 400, 'Mission description must be a string');
     }
 
     console.log(`🔍 Extracting features from: "${missionDescription.substring(0, 50)}..."`);
@@ -161,15 +161,15 @@ async function batchAnalyzeMissions(req, res) {
 
     // Validate request
     if (!missions || !Array.isArray(missions)) {
-      return errorResponse(res, 'Missions must be an array', 400);
+      return errorResponse(res, 400, 'Missions must be an array');
     }
 
     if (missions.length === 0) {
-      return errorResponse(res, 'At least one mission is required', 400);
+      return errorResponse(res, 400, 'At least one mission is required');
     }
 
     if (missions.length > 5) {
-      return errorResponse(res, 'Maximum 5 missions can be analyzed at once', 400);
+      return errorResponse(res, 400, 'Maximum 5 missions can be analyzed at once');
     }
 
     const limit = topN ? parseInt(topN) : 3;
