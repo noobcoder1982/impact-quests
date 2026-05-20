@@ -140,102 +140,128 @@ function MobileNav({ onLogout }: { onLogout: () => void }) {
         {open && (
           <motion.div
             key="nav-dropdown"
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 38 }}
-            className="md:hidden fixed bottom-24 inset-x-4 z-[55] bg-background border border-border rounded-3xl shadow-2xl overflow-hidden"
+            initial={{ y: "-100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "-100%", opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 28 }}
+            className="md:hidden fixed top-0 inset-x-0 z-[55] bg-background border-b-4 border-foreground flex flex-col max-h-[82vh] overflow-y-auto"
+            style={{ boxShadow: '0px 8px 0px hsl(var(--p))' }}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 pt-5 pb-3">
-              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground/40">Navigate</p>
+            {/* Grid Overlay background */}
+            <div 
+              className="absolute inset-0 opacity-[0.05] pointer-events-none"
+              style={{
+                backgroundImage: `
+                  linear-gradient(to right, rgba(120, 120, 120, 0.4) 1px, transparent 1px),
+                  linear-gradient(to bottom, rgba(120, 120, 120, 0.4) 1px, transparent 1px)
+                `,
+                backgroundSize: '2rem 2rem',
+              }}
+            />
+
+            {/* Header / Title bar with safe top-padding for mobile statusbars */}
+            <div className="flex items-center justify-between px-6 pt-10 pb-4 border-b-2 border-foreground bg-secondary/20 relative z-10">
+              <p className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-foreground">[ SYSTEM_CORE: NAVIGATE ]</p>
               <button
                 onClick={() => setOpen(false)}
-                className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center"
+                className="px-2.5 py-1 bg-zinc-950 text-white font-mono text-[9px] border-2 border-foreground uppercase hover:bg-rose-500 transition-colors cursor-pointer"
               >
-                <Close size={14} className="text-foreground" />
+                CLOSE
               </button>
             </div>
 
-            {/* Core 4 — full-width rows, cascade down */}
-            <div className="px-3 space-y-1">
+            {/* Core 4 — Beautiful 2x2 grid array separated by thick outlines */}
+            <div className="grid grid-cols-2 gap-0 border-b-2 border-foreground divide-y-2 divide-x-2 divide-foreground bg-background relative z-10">
               {coreLinks.map((link, i) => {
-                const isActive = location.pathname === link.path;
-                return (
-                  <motion.button
-                    key={link.path}
-                    initial={{ opacity: 0, y: -12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05, type: 'spring', stiffness: 400, damping: 30 }}
-                    onClick={() => handleNav(link.path)}
-                    className={cn(
-                      "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-colors text-left",
-                      isActive ? "bg-indigo-600 text-white" : "bg-secondary/40 text-foreground hover:bg-secondary/70"
-                    )}
-                  >
-                    <link.icon size={18} />
-                    <span className="text-sm font-black tracking-tight flex-1">{link.label}</span>
-                    {isActive && <div className="h-1.5 w-1.5 rounded-full bg-white/70" />}
-                  </motion.button>
-                );
-              })}
-            </div>
-
-            {/* Divider */}
-            <div className="mx-4 my-3 border-t border-border/60" />
-
-            {/* Secondary — 2-col grid, cascade down after core */}
-            <div className="px-3 grid grid-cols-2 gap-1.5">
-              {secondaryLinks.map((link, i) => {
                 const isActive = location.pathname === link.path;
                 return (
                   <motion.button
                     key={link.path}
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + i * 0.04, type: 'spring', stiffness: 400, damping: 30 }}
+                    transition={{ delay: i * 0.04, type: 'spring', stiffness: 350, damping: 25 }}
                     onClick={() => handleNav(link.path)}
                     className={cn(
-                      "flex items-center gap-2.5 px-3.5 py-3 rounded-xl border text-left transition-colors",
-                      isActive
-                        ? "border-indigo-600/30 bg-indigo-600/10 text-indigo-600"
-                        : "border-border/40 bg-secondary/20 text-muted-foreground hover:bg-secondary/50"
+                      "flex flex-col items-center justify-center p-6 text-center select-none cursor-pointer transition-colors relative hover:bg-secondary/30",
+                      isActive ? "bg-[hsl(var(--p))] text-white" : "bg-card text-foreground"
                     )}
                   >
-                    <link.icon size={15} />
-                    <span className="text-[11px] font-bold tracking-tight leading-tight">{link.label}</span>
+                    {/* Active corner tag */}
+                    {isActive && (
+                      <span className="absolute top-2 right-2 font-mono text-[6px] uppercase tracking-widest border border-white/40 px-1 py-0.2 bg-white/10 text-white">
+                        ACTIVE
+                      </span>
+                    )}
+                    <div className={cn(
+                      "h-10 w-10 border-2 border-foreground flex items-center justify-center mb-2.5 transition-transform",
+                      isActive ? "bg-white text-[hsl(var(--p))]" : "bg-secondary text-foreground"
+                    )}>
+                      <link.icon size={20} />
+                    </div>
+                    <span className="text-xs font-black uppercase tracking-wider font-sans leading-none">{link.label}</span>
                   </motion.button>
                 );
               })}
             </div>
 
-            {/* Logout */}
+            {/* Secondary — 2-col compact grid separated by standard neo outlines */}
+            <div className="grid grid-cols-2 gap-0 divide-y divide-x divide-foreground bg-background border-b border-foreground relative z-10">
+              {secondaryLinks.map((link, i) => {
+                const isActive = location.pathname === link.path;
+                return (
+                  <motion.button
+                    key={link.path}
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 + i * 0.03, type: 'spring', stiffness: 350, damping: 25 }}
+                    onClick={() => handleNav(link.path)}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-secondary/30",
+                      isActive 
+                        ? "bg-[hsl(var(--p))]/10 text-[hsl(var(--p))]" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <div className={cn(
+                      "h-6 w-6 border border-foreground flex items-center justify-center shrink-0",
+                      isActive ? "bg-[hsl(var(--p))]/20 text-[hsl(var(--p))]" : "bg-secondary text-muted-foreground"
+                    )}>
+                      <link.icon size={12} />
+                    </div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider leading-none flex-1 truncate">{link.label}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+
+            {/* Logout Row */}
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
+              initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, type: 'spring', stiffness: 400, damping: 30 }}
-              className="px-3 pt-3 pb-4"
+              transition={{ delay: 0.3, type: 'spring', stiffness: 350, damping: 25 }}
+              className="p-4 bg-secondary/15 relative z-10"
             >
               <button
                 onClick={() => { setOpen(false); onLogout(); }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl border border-rose-500/20 text-rose-500 bg-rose-500/5 hover:bg-rose-500/10 transition-colors"
+                className="w-full py-3.5 bg-rose-500 hover:bg-rose-600 text-white border-2 border-foreground font-mono text-xs font-black uppercase tracking-widest transition-all shadow-[4px_4px_0px_#000] active:scale-95 active:shadow-none"
               >
-                <LogoutIconNav size={16} />
-                <span className="text-[11px] font-black uppercase tracking-widest">Sign Out</span>
+                Sign Out / End Protocol
               </button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Backdrop tap-to-close */}
+      {/* Backdrop tap-to-close with glassmorphism blur */}
       <AnimatePresence>
         {open && (
           <motion.div
             key="nav-backdrop"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
             onClick={() => setOpen(false)}
-            className="md:hidden fixed inset-0 z-[54]"
+            className="md:hidden fixed inset-0 z-[54] bg-background/50 backdrop-blur-md"
           />
         )}
       </AnimatePresence>

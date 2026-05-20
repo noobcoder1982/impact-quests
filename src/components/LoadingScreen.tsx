@@ -1,5 +1,5 @@
 import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 
 interface LoadingScreenProps {
   onComplete: () => void
@@ -7,29 +7,28 @@ interface LoadingScreenProps {
 
 export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [progress, setProgress] = React.useState(0)
-  const [telemetryText, setTelemetryText] = React.useState("Initializing Core Connections")
-  const text = "ImpactQuest"
+  const [telemetryText, setTelemetryText] = React.useState("INITIALIZING PORTAL SYSTEM")
 
   // Shifting telemetry status text based on progress
   React.useEffect(() => {
     if (progress < 20) {
-      setTelemetryText("Initializing Core Connections...")
+      setTelemetryText("INITIALIZING PORTAL CORE")
     } else if (progress < 40) {
-      setTelemetryText("Detecting Humanitarian Zones...")
+      setTelemetryText("RESOLVING GEOMETRIC COORDINATES")
     } else if (progress < 60) {
-      setTelemetryText("Syncing Secure XP Ledgers...")
+      setTelemetryText("SYNCING SECURE XP LEDGER")
     } else if (progress < 80) {
-      setTelemetryText("Engaging Matching Engine...")
+      setTelemetryText("MATCHING ENGAGEMENT ENGINES")
     } else if (progress < 99) {
-      setTelemetryText("Booting Strategic Control Hub...")
+      setTelemetryText("CALIBRATING INTERFACE PORTS")
     } else {
-      setTelemetryText("Induction Authenticated.")
+      setTelemetryText("CONNECTION ESTABLISHED")
     }
   }, [progress])
 
   React.useEffect(() => {
-    const duration = 3200 // 3.2 seconds total
-    const interval = 20 
+    const duration = 2600 // Snappy, premium, and fluid loading time
+    const interval = 20
     const step = 100 / (duration / interval)
     
     const timer = setInterval(() => {
@@ -44,7 +43,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
     const completionTimer = setTimeout(() => {
       onComplete()
-    }, duration + 500)
+    }, duration + 300)
 
     return () => {
       clearInterval(timer)
@@ -52,183 +51,197 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
     }
   }, [onComplete])
 
-  const container = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.1
-      }
-    }
-  }
-
-  const letterVariant = {
-    hidden: { opacity: 0, filter: "blur(20px)", y: 15 },
-    visible: { 
-      opacity: 1, 
-      filter: "blur(0px)", 
-      y: 0,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
-    }
-  }
+  // Segment count for progress bar
+  const totalSegments = 16
+  const activeSegments = Math.floor((progress / 100) * totalSegments)
 
   return (
     <motion.div 
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, filter: "blur(40px)" }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
-      className="fixed inset-0 z-[9999] bg-[#020203] flex flex-col items-center justify-center overflow-hidden font-sans text-white select-none"
+      exit={{ opacity: 0, scale: 0.98, filter: "blur(8px)" }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed inset-0 z-[9999] bg-[#09090b] flex flex-col items-center justify-center overflow-hidden text-white select-none p-4"
     >
-      {/* Subtle Cinematic Background Spotlight Glows */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-600/5 blur-[150px] rounded-full pointer-events-none" />
-
-      {/* ========================================================================= */}
-      {/* 📱 MOBILE EXCLUSIVE UI: Clean Circular HUD Dial (Wow Factor) */}
-      {/* ========================================================================= */}
-      <div className="md:hidden relative flex flex-col items-center justify-center w-full px-6 space-y-12">
-         
-         {/* Top Subtitle tag */}
-         <div className="flex items-center gap-2 text-[9px] font-mono tracking-[0.25em] text-indigo-400/40">
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-500/60 animate-pulse" />
-            <span>MOBILE SECURE INDUCTION</span>
-         </div>
-
-         {/* Circular HUD Loader */}
-         <div className="relative w-56 h-56 flex items-center justify-center">
-            
-            {/* Outer subtle rotating dashed trace */}
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
-              className="absolute inset-0 rounded-full border border-dashed border-indigo-500/10"
-            />
-
-            {/* Active Circular SVG Progress line */}
-            <svg className="absolute inset-4 w-[calc(100%-32px)] h-[calc(100%-32px)] -rotate-90 overflow-visible">
-               <circle
-                  cx="50%"
-                  cy="50%"
-                  r="45%"
-                  fill="none"
-                  stroke="rgba(255, 255, 255, 0.02)"
-                  strokeWidth="2.5"
-               />
-               <motion.circle
-                  cx="50%"
-                  cy="50%"
-                  r="45%"
-                  fill="none"
-                  stroke="url(#mobileGlowGradient)"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  style={{ filter: "drop-shadow(0 0 6px rgba(99, 102, 241, 0.5))" }}
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: progress / 100 }}
-                  transition={{ duration: 0.1, ease: "linear" }}
-               />
-               <defs>
-                  <linearGradient id="mobileGlowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                     <stop offset="0%" stopColor="#818cf8" />
-                     <stop offset="100%" stopColor="#6366f1" />
-                  </linearGradient>
-               </defs>
-            </svg>
-
-            {/* Stacked Branding Emblem in the Circle Center */}
-            <div className="absolute flex flex-col items-center justify-center text-center space-y-1.5 z-10">
-               <span className="text-xl font-bold uppercase tracking-[0.2em] text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  Impact
-               </span>
-               <span className="text-2xl font-black italic text-indigo-400 font-serif tracking-normal" style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}>
-                  Quest.
-               </span>
-               
-               {/* Clean Percentage capsule */}
-               <div className="pt-2">
-                  <span className="text-[10px] font-mono font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
-                     {Math.round(progress)}%
-                  </span>
-               </div>
-            </div>
-         </div>
-
-         {/* Bottom Telemetry Briefing */}
-         <div className="w-full max-w-xs text-center space-y-3 font-mono">
-            <div className="text-[10px] tracking-widest text-indigo-400/80">
-               &gt; {telemetryText}
-            </div>
-            <div className="text-[8px] text-muted-foreground/30 tracking-[0.3em]">
-               V4.0.1 STABLE
-            </div>
-         </div>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* 💻 DESKTOP UI: Minimalist Telemetry Loader */}
-      {/* ========================================================================= */}
-      <div className="hidden md:flex flex-col items-center justify-center w-full max-w-4xl px-6 text-center space-y-12">
-         
-         {/* Logo Branding */}
-         <motion.div 
-            variants={container}
-            initial="hidden"
-            animate="visible"
-            className="flex items-center justify-center overflow-visible"
-         >
-            {text.split("").map((char, i) => (
-              <motion.span
-                key={i}
-                variants={letterVariant}
-                className={cn(
-                  "text-6xl md:text-[6.5rem] lg:text-[7.5rem] font-black tracking-tighter inline-block leading-none",
-                  i >= 6 
-                    ? "text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-indigo-500 to-indigo-700 font-serif italic tracking-normal ml-1" 
-                    : "text-foreground drop-shadow-[0_2px_15px_rgba(255,255,255,0.05)]"
-                )}
-                style={i >= 6 ? { fontFamily: "'Instrument Serif', Georgia, serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
-              >
-                {char}
-              </motion.span>
-            ))}
-         </motion.div>
-
-         {/* Segmented Digital Progress loader */}
-         <div className="w-full max-w-md space-y-6">
-            
-            <div className="flex gap-1.5 justify-between w-full h-2 px-1 bg-zinc-950/80 rounded-lg border border-white/5 p-0.5 backdrop-blur-xl">
-               {Array.from({ length: 15 }).map((_, idx) => {
-                  const blockMinProgress = (idx / 15) * 100
-                  const isFilled = progress >= blockMinProgress
-                  return (
-                     <div 
-                       key={idx}
-                       className={cn(
-                         "flex-1 h-full rounded-sm transition-all duration-300",
-                         isFilled 
-                           ? "bg-gradient-to-t from-indigo-600 to-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.5)]" 
-                           : "bg-white/[0.02]"
-                       )}
-                     />
-                  )
-               })}
-            </div>
-
-            {/* Subtext and percent */}
-            <div className="flex justify-between items-center px-1 font-mono text-[10px] tracking-widest text-indigo-400 leading-none">
-               <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-indigo-500/80 animate-ping" />
-                  <span className="font-bold uppercase text-foreground/70">{telemetryText}</span>
-               </div>
-               <span className="font-black text-indigo-300">{Math.round(progress)}%</span>
-            </div>
-         </div>
-      </div>
+      {/* 1. Structural Grid Background (Pure Semi-Brutalist Grid) */}
+      <div 
+        className="absolute inset-0 opacity-20 pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)
+          `,
+          backgroundSize: '3.5rem 3.5rem',
+        }}
+      />
       
+      {/* Subtle black overlay for cinematic vignette */}
+      <div className="absolute inset-0 bg-radial-gradient from-transparent via-[#09090b]/60 to-[#09090b] pointer-events-none" />
+
+      {/* 2. PC / DESKTOP PRELOADER */}
+      <div className="hidden md:flex flex-col items-center justify-center w-full max-w-lg relative">
+        
+        {/* Asymmetrical Floating Accent Stamp (Neo-Brutalist detail) */}
+        <motion.div
+          initial={{ x: 20, y: -20, opacity: 0, rotate: 12 }}
+          animate={{ x: 0, y: 0, opacity: 1, rotate: 6 }}
+          transition={{ delay: 0.2, type: "spring" }}
+          className="absolute -top-6 -right-6 z-20 border-2 border-white px-3 py-1 text-[10px] font-mono font-bold text-white shadow-[2px_2px_0px_#000]"
+          style={{ backgroundColor: 'hsl(var(--p))' }}
+        >
+          IQ_SYS.v4.0
+        </motion.div>
+
+        {/* Central Card Container */}
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 150, damping: 18 }}
+          className="w-full bg-zinc-900 border-4 border-white p-8 flex flex-col space-y-6 relative"
+          style={{ boxShadow: '8px 8px 0px hsl(var(--p))' }}
+        >
+          {/* Header Row */}
+          <div className="flex justify-between items-center text-[10px] font-mono tracking-wider text-zinc-400">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-green-500 rounded-none animate-ping" />
+              <span>STATUS: ONLINE</span>
+            </div>
+            <span>[ SYSTEM PORTAL CORE ]</span>
+          </div>
+
+          {/* Solid Divider */}
+          <div className="w-full h-[2px] bg-white/20" />
+
+          {/* Big Chunky Brutalist Logo Section */}
+          <div className="flex flex-col space-y-1">
+            <h1 className="text-6xl font-black tracking-tighter leading-none" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              IMPACT
+            </h1>
+            <h2 className="text-5xl font-serif italic leading-none pl-1 flex items-center gap-2" style={{ fontFamily: "'Instrument Serif', serif", color: 'hsl(var(--p))' }}>
+              Quest.
+              <span className="inline-block w-4 h-4 border border-white" style={{ backgroundColor: 'hsl(var(--p))' }} />
+            </h2>
+          </div>
+
+          {/* Segmented LED Bar Container */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-[11px] font-mono text-zinc-400">
+              <span>LOADING PROGRESS</span>
+              <span className="font-bold font-mono text-lg" style={{ color: 'hsl(var(--p))' }}>{Math.round(progress)}%</span>
+            </div>
+            
+            {/* Chunky Brutalist Bar */}
+            <div className="h-9 border-2 border-white bg-zinc-950 p-1 flex gap-1 items-center">
+              {Array.from({ length: totalSegments }).map((_, index) => {
+                const isFilled = index < activeSegments
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: index * 0.03 }}
+                    className="flex-1 h-full transition-colors duration-150 rounded-none"
+                    style={{ 
+                      backgroundColor: isFilled ? 'hsl(var(--p))' : 'transparent',
+                      border: isFilled ? '1px solid rgba(255,255,255,0.2)' : 'none',
+                      opacity: isFilled ? 1 : 0.1,
+                      backgroundImage: isFilled ? 'linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent)' : 'none',
+                      backgroundSize: '8px 8px'
+                    }}
+                  />
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Solid Divider */}
+          <div className="w-full h-[1px] bg-white/10" />
+
+          {/* Footer Telemetry Row */}
+          <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400">
+            <div className="flex items-center gap-1.5 overflow-hidden">
+              <span className="font-bold animate-pulse" style={{ color: 'hsl(var(--p))' }}>&gt;</span>
+              <span className="truncate max-w-[280px]">{telemetryText}</span>
+            </div>
+            <span className="text-[8px] bg-white/10 px-2 py-0.5 font-bold uppercase tracking-widest text-zinc-300">
+              STABLE_CORE
+            </span>
+          </div>
+
+        </motion.div>
+      </div>
+
+      {/* 3. MOBILE EXCLUSIVE PRELOADER */}
+      <div className="md:hidden flex flex-col items-center justify-center w-full max-w-xs relative">
+        
+        {/* Floating Asymmetric Accent (Neo-Brutalist Badge) */}
+        <motion.div
+          initial={{ x: 10, y: -10, opacity: 0, rotate: -6 }}
+          animate={{ x: 0, y: 0, opacity: 1, rotate: -4 }}
+          transition={{ delay: 0.15, type: "spring" }}
+          className="absolute -top-4 -left-3 z-20 bg-amber-500 border-2 border-white px-2 py-0.5 text-[8px] font-mono font-bold text-white shadow-[2px_2px_0px_#000]"
+        >
+          [MOBILE_IND]
+        </motion.div>
+
+        {/* Square Brutalist Card */}
+        <motion.div
+          initial={{ scale: 0.94, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 160, damping: 16 }}
+          className="w-full aspect-square bg-zinc-900 border-4 border-white p-6 flex flex-col justify-between relative"
+          style={{ boxShadow: '6px 6px 0px hsl(var(--p))' }}
+        >
+          {/* Top Info Slot */}
+          <div className="flex justify-between items-center text-[8px] font-mono text-zinc-400">
+            <span>[ SYSTEM: IQ-MOBILE ]</span>
+            <div className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-none animate-pulse" style={{ backgroundColor: 'hsl(var(--p))' }} />
+              <span>ACTIVE</span>
+            </div>
+          </div>
+
+          {/* Centered Brand Stack */}
+          <div className="flex flex-col space-y-0.5 my-auto text-left">
+            <h2 className="text-4xl font-black tracking-tight leading-none" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              IMPACT
+            </h2>
+            <div className="h-[2px] w-12 bg-white/40 my-1" />
+            <h3 className="text-4xl font-serif italic leading-none" style={{ fontFamily: "'Instrument Serif', serif", color: 'hsl(var(--p))' }}>
+              Quest.
+            </h3>
+          </div>
+
+          {/* Bottom Progress Metrics and Chunky Loader */}
+          <div className="space-y-3">
+            {/* Raw Numeric Loader Header */}
+            <div className="flex justify-between items-end">
+              <span className="text-[8px] font-mono text-zinc-500 leading-none">PROGRESS MODULE</span>
+              <span className="text-2xl font-mono font-black text-white leading-none">
+                {Math.round(progress)}<span className="text-[12px] ml-0.5" style={{ color: 'hsl(var(--p))' }}>%</span>
+              </span>
+            </div>
+
+            {/* Flat loading line progress block */}
+            <div className="h-4 border-2 border-white bg-zinc-950 p-0.5 relative overflow-hidden">
+              <motion.div 
+                className="h-full" 
+                style={{ 
+                  width: `${progress}%`,
+                  backgroundColor: 'hsl(var(--p))'
+                }}
+                transition={{ duration: 0.1 }}
+              />
+            </div>
+          </div>
+
+        </motion.div>
+
+        {/* Telemetry subtitle just beneath the card */}
+        <div className="w-full text-center mt-5 font-mono text-[9px] text-zinc-400/80 px-2 tracking-wide leading-relaxed">
+          &gt; {telemetryText}
+        </div>
+      </div>
+
     </motion.div>
   )
-}
-
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ')
 }
