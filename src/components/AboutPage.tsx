@@ -164,7 +164,19 @@ export default function AboutPage() {
         </section>
 
         {/* CTA SECTION */}
-        <section className="border-4 border-foreground bg-foreground text-background p-8 md:p-12 relative overflow-hidden" style={{ boxShadow: '8px 8px 0px hsl(var(--p))' }}>
+        <section className="border-4 border-foreground bg-zinc-950 text-white p-8 md:p-12 relative overflow-hidden" style={{ boxShadow: '8px 8px 0px hsl(var(--p))' }}>
+          {/* Blueprint background grid pattern specific to card for extreme premium look */}
+          <div 
+            className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, white 1px, transparent 1px),
+                linear-gradient(to bottom, white 1px, transparent 1px)
+              `,
+              backgroundSize: '2rem 2rem',
+            }}
+          />
+
           <motion.div 
             {...fadeUp} 
             className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative z-10"
@@ -180,14 +192,12 @@ export default function AboutPage() {
             
             <Link to="/signin" className="w-full md:w-auto shrink-0">
               <button 
-                className="w-full md:w-auto px-8 py-4 border-2 border-background font-mono font-bold text-base flex items-center justify-center gap-3 transition-all active:scale-95"
+                className="w-full md:w-auto px-8 py-4 border-2 border-white bg-white text-zinc-950 font-mono font-bold text-base flex items-center justify-center gap-3 transition-all hover:bg-zinc-100 active:scale-95"
                 style={{ 
-                  backgroundColor: 'hsl(var(--p))',
-                  color: 'white',
-                  boxShadow: '4px 4px 0px var(--theme-l-fg, #fff)'
+                  boxShadow: '4px 4px 0px hsl(var(--p))'
                 }}
               >
-                GET STARTED <ArrowRight className="h-5 w-5" />
+                GET STARTED <ArrowRight className="h-5 w-5 text-zinc-950" />
               </button>
             </Link>
           </motion.div>
